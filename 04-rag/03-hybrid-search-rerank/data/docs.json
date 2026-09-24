@@ -1,0 +1,16 @@
+[
+  {"id": "prod-nk4471", "text": "NK-4471 NimbusBuds Pro wireless earbuds with active noise cancellation, 30 hour battery life and USB-C charging case. Price 4999 rupees.", "metadata": {"category": "product", "year": 2025}},
+  {"id": "prod-nk4470", "text": "NK-4470 NimbusBuds Lite wireless earbuds, 18 hour battery, no noise cancellation. Price 1999 rupees.", "metadata": {"category": "product", "year": 2024}},
+  {"id": "prod-nk2210", "text": "NK-2210 NimbusBook 14 laptop with 16 GB RAM, 512 GB SSD and a 14 inch display. Weighs 1.3 kg. Price 58999 rupees.", "metadata": {"category": "product", "year": 2025}},
+  {"id": "prod-nk3105", "text": "NK-3105 NimbusFit smartwatch with heart rate, SpO2 and sleep tracking. Water resistant to 50 metres. Price 3499 rupees.", "metadata": {"category": "product", "year": 2024}},
+  {"id": "ts-e1042", "text": "Error E-1042 on NimbusBuds means the left and right earbuds lost pairing. Put both earbuds in the case, hold the case button for 10 seconds to reset pairing.", "metadata": {"category": "troubleshooting", "year": 2025}},
+  {"id": "ts-e2001", "text": "Error E-2001 on the NimbusBook means the battery firmware needs an update. Plug in the charger and run NimbusUpdate from the Start menu.", "metadata": {"category": "troubleshooting", "year": 2025}},
+  {"id": "ts-charging", "text": "If your earbuds are not charging, clean the charging contacts with a dry cloth and try a different USB-C cable. The case LED blinks red when the battery is critically low.", "metadata": {"category": "troubleshooting", "year": 2024}},
+  {"id": "ts-watch-sync", "text": "If the smartwatch does not sync with your phone, turn Bluetooth off and on, then reopen the NimbusFit app. Keep the watch within 5 metres of the phone.", "metadata": {"category": "troubleshooting", "year": 2024}},
+  {"id": "pol-refund", "text": "Refunds are allowed within 30 days of delivery for unused products in original packaging. Card refunds take 5 to 7 business days.", "metadata": {"category": "policy", "year": 2025}},
+  {"id": "pol-refund-2024", "text": "Old policy (2024): refunds were allowed within 15 days of delivery only.", "metadata": {"category": "policy", "year": 2024}},
+  {"id": "pol-warranty", "text": "Electronics carry a 1 year manufacturing warranty. Water damage and physical damage are not covered.", "metadata": {"category": "policy", "year": 2025}},
+  {"id": "pol-shipping", "text": "Express shipping delivers within 24 hours in metro cities and costs 99 rupees. Orders above 499 rupees ship free with standard delivery.", "metadata": {"category": "policy", "year": 2025}},
+  {"id": "blog-anc", "text": "How does active noise cancellation work? Microphones listen to outside sound and the earbuds play an inverted sound wave that cancels it out, so you hear less background noise on flights and trains.", "metadata": {"category": "blog", "year": 2025}},
+  {"id": "blog-battery", "text": "Tips to make your gadget battery last longer: avoid charging to 100 percent every night, keep devices away from heat and update firmware regularly.", "metadata": {"category": "blog", "year": 2024}}
+]

@@ -1,0 +1,14 @@
+[
+  {"question": "How long do card refunds take?", "relevant_sources": ["refund_policy.md"], "reference_answer": "5 to 7 business days."},
+  {"question": "How quickly are UPI refunds completed?", "relevant_sources": ["refund_policy.md"], "reference_answer": "Usually within 48 hours."},
+  {"question": "Can gift cards be refunded?", "relevant_sources": ["refund_policy.md"], "reference_answer": "No, gift cards are non-refundable."},
+  {"question": "How much does express shipping cost?", "relevant_sources": ["shipping.md"], "reference_answer": "99 rupees per order, free for Plus members."},
+  {"question": "Does NimbusKart ship internationally?", "relevant_sources": ["shipping.md"], "reference_answer": "No, only within India."},
+  {"question": "What is the minimum order for free shipping?", "relevant_sources": ["shipping.md"], "reference_answer": "Orders above 499 rupees."},
+  {"question": "How long is the warranty on NimbusKart electronics?", "relevant_sources": ["warranty.md"], "reference_answer": "1 year for manufacturing defects."},
+  {"question": "Is water damage covered by warranty?", "relevant_sources": ["warranty.md"], "reference_answer": "No."},
+  {"question": "How much does the yearly Plus membership cost?", "relevant_sources": ["nimbus_plus.md"], "reference_answer": "999 rupees per year."},
+  {"question": "What cashback do Plus members get?", "relevant_sources": ["nimbus_plus.md"], "reference_answer": "5 percent wallet cashback on every order."},
+  {"question": "What are the customer support hours?", "relevant_sources": ["support_hours.md"], "reference_answer": "8 AM to 10 PM IST, all seven days."},
+  {"question": "Is express shipping free for Plus members?", "relevant_sources": ["shipping.md", "nimbus_plus.md"], "reference_answer": "Yes, free express shipping is a Plus benefit."}
+]
