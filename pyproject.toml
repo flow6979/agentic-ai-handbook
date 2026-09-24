@@ -13,9 +13,9 @@ dependencies = [
 # Section-specific extras. `pip install -e ".[all]"` sab install kar deta hai.
 rag = ["pypdf>=4.0"]
 web = []
-comm = ["fastapi>=0.110", "uvicorn>=0.29", "mcp>=1.2"]
+comm = ["fastapi>=0.110", "uvicorn>=0.29", "mcp>=2.2"]
 dev = ["pytest>=8"]
-all = ["pypdf>=4.0", "fastapi>=0.110", "uvicorn>=0.29", "mcp>=1.2", "pytest>=8"]
+all = ["pypdf>=4.0", "fastapi>=0.110", "uvicorn>=0.29", "mcp>=2.2", "pytest>=8"]
 
 [build-system]
 requires = ["setuptools>=68"]
