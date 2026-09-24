@@ -20,7 +20,7 @@ Scripted = Union[str, LLMResponse]
 _ids = itertools.count(1)
 
 
-def call(name: str, **arguments) -> ToolCall:
+def call(name: str, /, **arguments) -> ToolCall:
     """Test mein tool call banane ka shortcut: call('add', a=2, b=3)."""
     return ToolCall(id=f"call_{next(_ids)}", name=name, arguments=arguments)
 
