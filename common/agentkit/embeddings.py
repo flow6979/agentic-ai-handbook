@@ -17,8 +17,7 @@ import os
 import re
 from abc import ABC, abstractmethod
 
-import httpx
-
+from .llm import http
 from .llm.factory import OPENAI_COMPAT, _load_dotenv
 
 
@@ -61,19 +60,22 @@ class OpenAICompatEmbedder(Embedder):
 
     def embed(self, texts):
         headers = {"Authorization": f"Bearer {self.api_key}"} if self.api_key else {}
-        r = httpx.post(f"{self.base_url}/embeddings", json={"model": self.model, "input": texts}, headers=headers, timeout=60)
-        r.raise_for_status()
+        r = http.post_json(f"{self.base_url}/embeddings", {"model": self.model, "input": texts}, headers=headers, timeout=60)
+        if r.status >= 400:
+            raise RuntimeError(f"embeddings HTTP {r.status}: {r.text[:300]}")
         return [d["embedding"] for d in sorted(r.json()["data"], key=lambda d: d["index"])]
 
 
-def get_embedder(spec: str | None = None) -> Embedder:
+def get_embedder(spec: str | None = None, *, api_key: str | None = None) -> Embedder:
+    """`api_key` do to env ki jagah wahi use hoga (browser UI har request pe key deta hai)."""
     _load_dotenv()
     spec = spec or os.getenv("EMBED_MODEL") or "local"
     if spec == "local":
         return HashingEmbedder()
     provider, model = spec.split(":", 1)
     base_url, key_env = OPENAI_COMPAT[provider]
-    return OpenAICompatEmbedder(model, base_url, os.getenv(key_env) if key_env else None)
+    key = api_key or (os.getenv(key_env) if key_env else None)
+    return OpenAICompatEmbedder(model, base_url, key)
 
 
 def cosine(a: list[float], b: list[float]) -> float:

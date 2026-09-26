@@ -10,8 +10,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-import httpx
-
+from . import http
 from .base import LLM
 from .types import LLMError, LLMResponse, Message, ToolCall, ToolSpec, Usage
 
@@ -56,15 +55,15 @@ class OpenAICompatLLM(LLM):
         if self.api_key:
             headers["Authorization"] = f"Bearer {self.api_key}"
         try:
-            r = httpx.post(f"{self.base_url}/chat/completions", json=body, headers=headers, timeout=self.timeout)
-        except httpx.TransportError as e:  # network glitch, timeout
+            r = http.post_json(f"{self.base_url}/chat/completions", body, headers=headers, timeout=self.timeout)
+        except http.TransportError as e:  # network glitch, timeout, browser CORS block
             raise LLMError(f"{self.provider} network error: {e}", retryable=True) from e
-        if r.status_code >= 400:
+        if r.status >= 400:
             # 429 (rate limit) aur 5xx (server issue) retry karne layak hain; 400/401 nahi.
             raise LLMError(
-                f"{self.provider} HTTP {r.status_code}: {r.text[:300]}",
-                status=r.status_code,
-                retryable=r.status_code == 429 or r.status_code >= 500,
+                f"{self.provider} HTTP {r.status}: {r.text[:300]}",
+                status=r.status,
+                retryable=r.status == 429 or r.status >= 500,
             )
         return self._from_wire(r.json())
 

@@ -9,8 +9,7 @@ from __future__ import annotations
 
 from typing import Any
 
-import httpx
-
+from . import http
 from .base import LLM
 from .types import LLMError, LLMResponse, Message, ToolCall, Usage
 
@@ -57,15 +56,17 @@ class AnthropicLLM(LLM):
         if tools:
             body["tools"] = [{"name": t.name, "description": t.description, "input_schema": t.parameters} for t in tools]
         headers = {"x-api-key": self.api_key or "", "anthropic-version": "2023-06-01", "content-type": "application/json"}
+        if http.IN_BROWSER:  # browser se seedha call ke liye Anthropic yeh opt-in header maangta hai
+            headers["anthropic-dangerous-direct-browser-access"] = "true"
         try:
-            r = httpx.post(API_URL, json=body, headers=headers, timeout=self.timeout)
-        except httpx.TransportError as e:
+            r = http.post_json(API_URL, body, headers=headers, timeout=self.timeout)
+        except http.TransportError as e:
             raise LLMError(f"anthropic network error: {e}", retryable=True) from e
-        if r.status_code >= 400:
+        if r.status >= 400:
             raise LLMError(
-                f"anthropic HTTP {r.status_code}: {r.text[:300]}",
-                status=r.status_code,
-                retryable=r.status_code in (429, 529) or r.status_code >= 500,
+                f"anthropic HTTP {r.status}: {r.text[:300]}",
+                status=r.status,
+                retryable=r.status in (429, 529) or r.status >= 500,
             )
         data = r.json()
         text = "".join(b["text"] for b in data["content"] if b["type"] == "text") or None
