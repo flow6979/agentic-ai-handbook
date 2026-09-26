@@ -1,0 +1,1570 @@
+{
+ "recorded_at": "2026-09-26T11:54:06Z",
+ "command": ".venv/bin/python lab-api/record_comm_traces.py",
+ "mcp_sdk": "2.2.0",
+ "python": "3.14.7",
+ "mcp": {
+  "lanes": [
+   "host",
+   "client",
+   "server"
+  ],
+  "question": "Add a note to buy 2L milk (tag groceries), then show my grocery notes.",
+  "messages": [
+   {
+    "seq": 1,
+    "t_ms": 0.4,
+    "from": "host",
+    "to": "client",
+    "kind": "note",
+    "method": null,
+    "label": "spawn stdio subprocess: python mcp_notes_server.py",
+    "json": {
+     "transport": "stdio",
+     "command": [
+      "python",
+      "mcp_notes_server.py"
+     ]
+    }
+   },
+   {
+    "seq": 2,
+    "t_ms": 3.0,
+    "from": "client",
+    "to": "server",
+    "kind": "request",
+    "method": "initialize",
+    "label": "initialize",
+    "json": {
+     "jsonrpc": "2.0",
+     "method": "initialize",
+     "id": 1,
+     "params": {
+      "protocolVersion": "2025-11-25",
+      "capabilities": {},
+      "clientInfo": {
+       "name": "agent-lab-recorder",
+       "version": "0.1"
+      }
+     }
+    }
+   },
+   {
+    "seq": 3,
+    "t_ms": 511.7,
+    "from": "server",
+    "to": "client",
+    "kind": "response",
+    "method": "initialize",
+    "label": "result: initialize",
+    "json": {
+     "jsonrpc": "2.0",
+     "id": 1,
+     "result": {
+      "capabilities": {
+       "experimental": {},
+       "prompts": {
+        "listChanged": false
+       },
+       "resources": {
+        "listChanged": false,
+        "subscribe": false
+       },
+       "tools": {
+        "listChanged": false
+       }
+      },
+      "instructions": "A personal notes/tasks store. Search before adding duplicates. Notes have ids, tags and a done flag.",
+      "protocolVersion": "2025-11-25",
+      "serverInfo": {
+       "name": "notes",
+       "version": "1.0.0"
+      }
+     }
+    },
+    "error": false
+   },
+   {
+    "seq": 4,
+    "t_ms": 511.7,
+    "from": "client",
+    "to": "server",
+    "kind": "notification",
+    "method": "notifications/initialized",
+    "label": "notifications/initialized",
+    "json": {
+     "jsonrpc": "2.0",
+     "method": "notifications/initialized"
+    }
+   },
+   {
+    "seq": 5,
+    "t_ms": 511.8,
+    "from": "client",
+    "to": "server",
+    "kind": "request",
+    "method": "tools/list",
+    "label": "tools/list",
+    "json": {
+     "jsonrpc": "2.0",
+     "method": "tools/list",
+     "id": 2
+    }
+   },
+   {
+    "seq": 6,
+    "t_ms": 512.6,
+    "from": "server",
+    "to": "client",
+    "kind": "response",
+    "method": "tools/list",
+    "label": "result: tools/list",
+    "json": {
+     "jsonrpc": "2.0",
+     "id": 2,
+     "result": {
+      "tools": [
+       {
+        "annotations": {
+         "destructiveHint": false,
+         "readOnlyHint": false
+        },
+        "description": "Create a new note. Use tags like 'work', 'todo'. Returns the created note as JSON.",
+        "inputSchema": {
+         "properties": {
+          "title": {
+           "title": "Title",
+           "type": "string"
+          },
+          "body": {
+           "title": "Body",
+           "type": "string"
+          },
+          "tags": {
+           "anyOf": [
+            {
+             "items": {
+              "type": "string"
+             },
+             "type": "array"
+            },
+            {
+             "type": "null"
+            }
+           ],
+           "default": null,
+           "title": "Tags"
+          }
+         },
+         "required": [
+          "title",
+          "body"
+         ],
+         "type": "object",
+         "title": "add_noteArguments"
+        },
+        "name": "add_note",
+        "outputSchema": {
+         "properties": {
+          "result": {
+           "title": "Result",
+           "type": "string"
+          }
+         },
+         "required": [
+          "result"
+         ],
+         "type": "object",
+         "title": "add_noteOutput"
+        }
+       },
+       {
+        "annotations": {
+         "readOnlyHint": true
+        },
+        "description": "Search notes by text in title, body or tags. Returns a JSON list (can be empty).",
+        "inputSchema": {
+         "properties": {
+          "query": {
+           "title": "Query",
+           "type": "string"
+          }
+         },
+         "required": [
+          "query"
+         ],
+         "type": "object",
+         "title": "search_notesArguments"
+        },
+        "name": "search_notes",
+        "outputSchema": {
+         "properties": {
+          "result": {
+           "title": "Result",
+           "type": "string"
+          }
+         },
+         "required": [
+          "result"
+         ],
+         "type": "object",
+         "title": "search_notesOutput"
+        }
+       },
+       {
+        "annotations": {
+         "idempotentHint": true
+        },
+        "description": "Mark a note/task as done.",
+        "inputSchema": {
+         "properties": {
+          "note_id": {
+           "title": "Note Id",
+           "type": "integer"
+          }
+         },
+         "required": [
+          "note_id"
+         ],
+         "type": "object",
+         "title": "mark_doneArguments"
+        },
+        "name": "mark_done",
+        "outputSchema": {
+         "properties": {
+          "result": {
+           "title": "Result",
+           "type": "string"
+          }
+         },
+         "required": [
+          "result"
+         ],
+         "type": "object",
+         "title": "mark_doneOutput"
+        }
+       },
+       {
+        "annotations": {
+         "destructiveHint": true
+        },
+        "description": "Permanently delete a note. Destructive: hosts should ask the user before calling.",
+        "inputSchema": {
+         "properties": {
+          "note_id": {
+           "title": "Note Id",
+           "type": "integer"
+          }
+         },
+         "required": [
+          "note_id"
+         ],
+         "type": "object",
+         "title": "delete_noteArguments"
+        },
+        "name": "delete_note",
+        "outputSchema": {
+         "properties": {
+          "result": {
+           "title": "Result",
+           "type": "string"
+          }
+         },
+         "required": [
+          "result"
+         ],
+         "type": "object",
+         "title": "delete_noteOutput"
+        }
+       }
+      ]
+     }
+    },
+    "error": false
+   },
+   {
+    "seq": 7,
+    "t_ms": 512.7,
+    "from": "client",
+    "to": "server",
+    "kind": "request",
+    "method": "resources/list",
+    "label": "resources/list",
+    "json": {
+     "jsonrpc": "2.0",
+     "method": "resources/list",
+     "id": 3
+    }
+   },
+   {
+    "seq": 8,
+    "t_ms": 513.2,
+    "from": "server",
+    "to": "client",
+    "kind": "response",
+    "method": "resources/list",
+    "label": "result: resources/list",
+    "json": {
+     "jsonrpc": "2.0",
+     "id": 3,
+     "result": {
+      "resources": [
+       {
+        "description": "Every note as a JSON list",
+        "mimeType": "application/json",
+        "name": "all_notes",
+        "uri": "notes://all"
+       }
+      ]
+     }
+    },
+    "error": false
+   },
+   {
+    "seq": 9,
+    "t_ms": 513.2,
+    "from": "client",
+    "to": "server",
+    "kind": "request",
+    "method": "prompts/list",
+    "label": "prompts/list",
+    "json": {
+     "jsonrpc": "2.0",
+     "method": "prompts/list",
+     "id": 4
+    }
+   },
+   {
+    "seq": 10,
+    "t_ms": 513.7,
+    "from": "server",
+    "to": "client",
+    "kind": "response",
+    "method": "prompts/list",
+    "label": "result: prompts/list",
+    "json": {
+     "jsonrpc": "2.0",
+     "id": 4,
+     "result": {
+      "prompts": [
+       {
+        "arguments": [
+         {
+          "name": "topic",
+          "required": true
+         }
+        ],
+        "description": "Summarize all notes about a topic",
+        "name": "summarize_notes"
+       },
+       {
+        "arguments": [],
+        "description": "Weekly review of open tasks",
+        "name": "weekly_review"
+       }
+      ]
+     }
+    },
+    "error": false
+   },
+   {
+    "seq": 11,
+    "t_ms": 513.7,
+    "from": "client",
+    "to": "host",
+    "kind": "note",
+    "method": null,
+    "label": "4 MCP tools -> agentkit Tools",
+    "json": {
+     "tools": [
+      "add_note",
+      "search_notes",
+      "mark_done",
+      "delete_note"
+     ]
+    }
+   },
+   {
+    "seq": 12,
+    "t_ms": 513.8,
+    "from": "host",
+    "to": "host",
+    "kind": "llm",
+    "method": null,
+    "label": "user: Add a note to buy 2L milk (tag groceries), then show my grocery notes.",
+    "json": {
+     "role": "user",
+     "content": "Add a note to buy 2L milk (tag groceries), then show my grocery notes."
+    }
+   },
+   {
+    "seq": 13,
+    "t_ms": 513.8,
+    "from": "host",
+    "to": "client",
+    "kind": "llm",
+    "method": null,
+    "label": "LLM chose tool: add_note({'title': 'Buy milk', 'body': '2L toned milk', 'tags': ['groceries']})",
+    "json": {
+     "tool_call": "add_note({'title': 'Buy milk', 'body': '2L toned milk', 'tags': ['groceries']})"
+    }
+   },
+   {
+    "seq": 14,
+    "t_ms": 513.8,
+    "from": "client",
+    "to": "server",
+    "kind": "request",
+    "method": "tools/call",
+    "label": "tools/call",
+    "json": {
+     "jsonrpc": "2.0",
+     "method": "tools/call",
+     "id": 5,
+     "params": {
+      "name": "add_note",
+      "arguments": {
+       "title": "Buy milk",
+       "body": "2L toned milk",
+       "tags": [
+        "groceries"
+       ]
+      }
+     }
+    }
+   },
+   {
+    "seq": 15,
+    "t_ms": 515.5,
+    "from": "server",
+    "to": "client",
+    "kind": "response",
+    "method": "tools/call",
+    "label": "result: tools/call",
+    "json": {
+     "jsonrpc": "2.0",
+     "id": 5,
+     "result": {
+      "content": [
+       {
+        "text": "{\"id\": 1, \"title\": \"Buy milk\", \"body\": \"2L toned milk\", \"tags\": [\"groceries\"], \"done\": false}",
+        "type": "text"
+       }
+      ],
+      "isError": false,
+      "structuredContent": {
+       "result": "{\"id\": 1, \"title\": \"Buy milk\", \"body\": \"2L toned milk\", \"tags\": [\"groceries\"], \"done\": false}"
+      }
+     }
+    },
+    "error": false
+   },
+   {
+    "seq": 16,
+    "t_ms": 515.5,
+    "from": "client",
+    "to": "host",
+    "kind": "tool_result",
+    "method": null,
+    "label": "tool result back to LLM",
+    "json": "{\"id\": 1, \"title\": \"Buy milk\", \"body\": \"2L toned milk\", \"tags\": [\"groceries\"], \"done\": false}"
+   },
+   {
+    "seq": 17,
+    "t_ms": 515.5,
+    "from": "host",
+    "to": "client",
+    "kind": "llm",
+    "method": null,
+    "label": "LLM chose tool: search_notes({'query': 'milk'})",
+    "json": {
+     "tool_call": "search_notes({'query': 'milk'})"
+    }
+   },
+   {
+    "seq": 18,
+    "t_ms": 515.5,
+    "from": "client",
+    "to": "server",
+    "kind": "request",
+    "method": "tools/call",
+    "label": "tools/call",
+    "json": {
+     "jsonrpc": "2.0",
+     "method": "tools/call",
+     "id": 6,
+     "params": {
+      "name": "search_notes",
+      "arguments": {
+       "query": "milk"
+      }
+     }
+    }
+   },
+   {
+    "seq": 19,
+    "t_ms": 516.9,
+    "from": "server",
+    "to": "client",
+    "kind": "response",
+    "method": "tools/call",
+    "label": "result: tools/call",
+    "json": {
+     "jsonrpc": "2.0",
+     "id": 6,
+     "result": {
+      "content": [
+       {
+        "text": "[{\"id\": 1, \"title\": \"Buy milk\", \"body\": \"2L toned milk\", \"tags\": [\"groceries\"], \"done\": false}]",
+        "type": "text"
+       }
+      ],
+      "isError": false,
+      "structuredContent": {
+       "result": "[{\"id\": 1, \"title\": \"Buy milk\", \"body\": \"2L toned milk\", \"tags\": [\"groceries\"], \"done\": false}]"
+      }
+     }
+    },
+    "error": false
+   },
+   {
+    "seq": 20,
+    "t_ms": 516.9,
+    "from": "client",
+    "to": "host",
+    "kind": "tool_result",
+    "method": null,
+    "label": "tool result back to LLM",
+    "json": "[{\"id\": 1, \"title\": \"Buy milk\", \"body\": \"2L toned milk\", \"tags\": [\"groceries\"], \"done\": false}]"
+   },
+   {
+    "seq": 21,
+    "t_ms": 516.9,
+    "from": "host",
+    "to": "host",
+    "kind": "answer",
+    "method": null,
+    "label": "final answer",
+    "json": "Done: I added 'Buy milk' (tag groceries). Your grocery notes: Buy milk (2L toned milk)."
+   }
+  ]
+ },
+ "a2a": {
+  "lanes": [
+   "user",
+   "orchestrator",
+   "remote"
+  ],
+  "question": "convert 20 USD",
+  "messages": [
+   {
+    "seq": 1,
+    "t_ms": 29.7,
+    "from": "orchestrator",
+    "to": "remote",
+    "kind": "note",
+    "method": null,
+    "label": "discovery: fetch the Agent Card",
+    "json": {
+     "url": "http://travel.local/.well-known/agent.json"
+    }
+   },
+   {
+    "seq": 2,
+    "t_ms": 29.9,
+    "from": "orchestrator",
+    "to": "remote",
+    "kind": "request",
+    "method": "agent-card",
+    "label": "GET /.well-known/agent-card.json",
+    "json": {
+     "http": "GET /.well-known/agent-card.json",
+     "body": null
+    }
+   },
+   {
+    "seq": 3,
+    "t_ms": 30.7,
+    "from": "remote",
+    "to": "orchestrator",
+    "kind": "response",
+    "method": "agent-card",
+    "label": "agent card: Travel & Currency Expert",
+    "json": {
+     "protocolVersion": "0.2.6",
+     "name": "Travel & Currency Expert",
+     "description": "Converts currencies and gives practical travel tips for popular destinations.",
+     "url": "http://travel.local/",
+     "version": "1.0.0",
+     "provider": {
+      "organization": "agentic-ai-handbook"
+     },
+     "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "stateTransitionHistory": true
+     },
+     "defaultInputModes": [
+      "text/plain",
+      "application/json"
+     ],
+     "defaultOutputModes": [
+      "text/plain",
+      "application/json"
+     ],
+     "skills": [
+      {
+       "id": "currency-conversion",
+       "name": "Currency conversion",
+       "description": "Convert an amount between currencies using current rates.",
+       "tags": [
+        "currency",
+        "money",
+        "exchange",
+        "forex"
+       ],
+       "examples": [
+        "Convert 100 USD to INR"
+       ]
+      },
+      {
+       "id": "travel-tips",
+       "name": "Travel tips",
+       "description": "Practical tips for a destination city.",
+       "tags": [
+        "travel",
+        "tips",
+        "city",
+        "trip"
+       ],
+       "examples": [
+        "Tips for Tokyo"
+       ]
+      }
+     ]
+    },
+    "state": null
+   },
+   {
+    "seq": 4,
+    "t_ms": 30.7,
+    "from": "user",
+    "to": "orchestrator",
+    "kind": "human",
+    "method": null,
+    "label": "user: convert 20 USD",
+    "json": {
+     "content": "convert 20 USD"
+    }
+   },
+   {
+    "seq": 5,
+    "t_ms": 30.9,
+    "from": "orchestrator",
+    "to": "orchestrator",
+    "kind": "llm",
+    "method": null,
+    "label": "orchestrator LLM chose: list_remote_agents({})",
+    "json": {
+     "tool_call": "list_remote_agents({})"
+    }
+   },
+   {
+    "seq": 6,
+    "t_ms": 31.0,
+    "from": "orchestrator",
+    "to": "orchestrator",
+    "kind": "llm",
+    "method": null,
+    "label": "orchestrator LLM chose: send_to_agent({'agent_name': 'Travel & Currency Expert', 'message': 'convert 20 USD'})",
+    "json": {
+     "tool_call": "send_to_agent({'agent_name': 'Travel & Currency Expert', 'message': 'convert 20 USD'})"
+    }
+   },
+   {
+    "seq": 7,
+    "t_ms": 32.7,
+    "from": "orchestrator",
+    "to": "remote",
+    "kind": "request",
+    "method": "message/send",
+    "label": "message/send",
+    "json": {
+     "http": "POST /",
+     "body": {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "method": "message/send",
+      "params": {
+       "message": {
+        "kind": "message",
+        "role": "user",
+        "parts": [
+         {
+          "kind": "text",
+          "text": "convert 20 USD"
+         }
+        ],
+        "messageId": "2483c8d9-6a17-40c4-a4fc-12a8bb8c64ed"
+       },
+       "configuration": {
+        "blocking": true
+       }
+      }
+     }
+    }
+   },
+   {
+    "seq": 8,
+    "t_ms": 85.1,
+    "from": "remote",
+    "to": "orchestrator",
+    "kind": "response",
+    "method": "message/send",
+    "label": "result: message/send (state=input-required)",
+    "json": {
+     "jsonrpc": "2.0",
+     "id": 1,
+     "result": {
+      "kind": "task",
+      "id": "c4b5a76a-3012-4add-b8b4-e5d87ecb715f",
+      "contextId": "738b8aef-7ac4-4de7-833d-504186b249d7",
+      "status": {
+       "state": "input-required",
+       "message": {
+        "kind": "message",
+        "role": "agent",
+        "parts": [
+         {
+          "kind": "text",
+          "text": "Which currency should I convert 20 USD to?"
+         }
+        ],
+        "messageId": "58b92073-9f12-4def-9e67-bc8da6f8286d",
+        "taskId": "c4b5a76a-3012-4add-b8b4-e5d87ecb715f",
+        "contextId": "738b8aef-7ac4-4de7-833d-504186b249d7",
+        "metadata": {
+         "state": "input-required"
+        }
+       },
+       "timestamp": "2026-09-26T11:54:06+00:00"
+      },
+      "history": [
+       {
+        "kind": "message",
+        "role": "user",
+        "parts": [
+         {
+          "kind": "text",
+          "text": "convert 20 USD"
+         }
+        ],
+        "messageId": "2483c8d9-6a17-40c4-a4fc-12a8bb8c64ed",
+        "taskId": "c4b5a76a-3012-4add-b8b4-e5d87ecb715f",
+        "contextId": "738b8aef-7ac4-4de7-833d-504186b249d7"
+       },
+       {
+        "kind": "message",
+        "role": "agent",
+        "parts": [
+         {
+          "kind": "text",
+          "text": "Travel expert is working on it"
+         }
+        ],
+        "messageId": "7ccf2bb2-8369-4679-a1a0-cdbcb411ed2c",
+        "taskId": "c4b5a76a-3012-4add-b8b4-e5d87ecb715f",
+        "contextId": "738b8aef-7ac4-4de7-833d-504186b249d7",
+        "metadata": {
+         "state": "working"
+        }
+       },
+       {
+        "kind": "message",
+        "role": "agent",
+        "parts": [
+         {
+          "kind": "text",
+          "text": "Which currency should I convert 20 USD to?"
+         }
+        ],
+        "messageId": "58b92073-9f12-4def-9e67-bc8da6f8286d",
+        "taskId": "c4b5a76a-3012-4add-b8b4-e5d87ecb715f",
+        "contextId": "738b8aef-7ac4-4de7-833d-504186b249d7",
+        "metadata": {
+         "state": "input-required"
+        }
+       }
+      ]
+     }
+    },
+    "state": "input-required"
+   },
+   {
+    "seq": 9,
+    "t_ms": 85.3,
+    "from": "orchestrator",
+    "to": "user",
+    "kind": "input_required",
+    "method": null,
+    "label": "ask user: Which currency should I convert 20 USD to?",
+    "json": {
+     "question": "Which currency should I convert 20 USD to?"
+    }
+   },
+   {
+    "seq": 10,
+    "t_ms": 85.3,
+    "from": "user",
+    "to": "orchestrator",
+    "kind": "human",
+    "method": null,
+    "label": "user answers: INR",
+    "json": {
+     "answer": "INR"
+    }
+   },
+   {
+    "seq": 11,
+    "t_ms": 85.3,
+    "from": "orchestrator",
+    "to": "orchestrator",
+    "kind": "llm",
+    "method": null,
+    "label": "orchestrator LLM chose: send_to_agent({'agent_name': 'Travel & Currency Expert', 'message': 'INR', 'task_id': 'c4b5a76a-3012-4add-b8b4-e5d87ecb715f'})",
+    "json": {
+     "tool_call": "send_to_agent({'agent_name': 'Travel & Currency Expert', 'message': 'INR', 'task_id': 'c4b5a76a-3012-4add-b8b4-e5d87ecb715f'})"
+    }
+   },
+   {
+    "seq": 12,
+    "t_ms": 85.4,
+    "from": "orchestrator",
+    "to": "remote",
+    "kind": "request",
+    "method": "tasks/get",
+    "label": "tasks/get",
+    "json": {
+     "http": "POST /",
+     "body": {
+      "jsonrpc": "2.0",
+      "id": 2,
+      "method": "tasks/get",
+      "params": {
+       "id": "c4b5a76a-3012-4add-b8b4-e5d87ecb715f"
+      }
+     }
+    }
+   },
+   {
+    "seq": 13,
+    "t_ms": 86.0,
+    "from": "remote",
+    "to": "orchestrator",
+    "kind": "response",
+    "method": "tasks/get",
+    "label": "result: tasks/get (state=input-required)",
+    "json": {
+     "jsonrpc": "2.0",
+     "id": 2,
+     "result": {
+      "kind": "task",
+      "id": "c4b5a76a-3012-4add-b8b4-e5d87ecb715f",
+      "contextId": "738b8aef-7ac4-4de7-833d-504186b249d7",
+      "status": {
+       "state": "input-required",
+       "message": {
+        "kind": "message",
+        "role": "agent",
+        "parts": [
+         {
+          "kind": "text",
+          "text": "Which currency should I convert 20 USD to?"
+         }
+        ],
+        "messageId": "58b92073-9f12-4def-9e67-bc8da6f8286d",
+        "taskId": "c4b5a76a-3012-4add-b8b4-e5d87ecb715f",
+        "contextId": "738b8aef-7ac4-4de7-833d-504186b249d7",
+        "metadata": {
+         "state": "input-required"
+        }
+       },
+       "timestamp": "2026-09-26T11:54:06+00:00"
+      },
+      "history": [
+       {
+        "kind": "message",
+        "role": "user",
+        "parts": [
+         {
+          "kind": "text",
+          "text": "convert 20 USD"
+         }
+        ],
+        "messageId": "2483c8d9-6a17-40c4-a4fc-12a8bb8c64ed",
+        "taskId": "c4b5a76a-3012-4add-b8b4-e5d87ecb715f",
+        "contextId": "738b8aef-7ac4-4de7-833d-504186b249d7"
+       },
+       {
+        "kind": "message",
+        "role": "agent",
+        "parts": [
+         {
+          "kind": "text",
+          "text": "Travel expert is working on it"
+         }
+        ],
+        "messageId": "7ccf2bb2-8369-4679-a1a0-cdbcb411ed2c",
+        "taskId": "c4b5a76a-3012-4add-b8b4-e5d87ecb715f",
+        "contextId": "738b8aef-7ac4-4de7-833d-504186b249d7",
+        "metadata": {
+         "state": "working"
+        }
+       },
+       {
+        "kind": "message",
+        "role": "agent",
+        "parts": [
+         {
+          "kind": "text",
+          "text": "Which currency should I convert 20 USD to?"
+         }
+        ],
+        "messageId": "58b92073-9f12-4def-9e67-bc8da6f8286d",
+        "taskId": "c4b5a76a-3012-4add-b8b4-e5d87ecb715f",
+        "contextId": "738b8aef-7ac4-4de7-833d-504186b249d7",
+        "metadata": {
+         "state": "input-required"
+        }
+       }
+      ]
+     }
+    },
+    "state": "input-required"
+   },
+   {
+    "seq": 14,
+    "t_ms": 86.1,
+    "from": "orchestrator",
+    "to": "remote",
+    "kind": "request",
+    "method": "message/send",
+    "label": "message/send",
+    "json": {
+     "http": "POST /",
+     "body": {
+      "jsonrpc": "2.0",
+      "id": 3,
+      "method": "message/send",
+      "params": {
+       "message": {
+        "kind": "message",
+        "role": "user",
+        "parts": [
+         {
+          "kind": "text",
+          "text": "INR"
+         }
+        ],
+        "messageId": "886b4320-d039-4b24-a0da-68eb7d7daccd",
+        "taskId": "c4b5a76a-3012-4add-b8b4-e5d87ecb715f",
+        "contextId": "738b8aef-7ac4-4de7-833d-504186b249d7"
+       },
+       "configuration": {
+        "blocking": true
+       }
+      }
+     }
+    }
+   },
+   {
+    "seq": 15,
+    "t_ms": 86.7,
+    "from": "remote",
+    "to": "remote",
+    "kind": "internal",
+    "method": null,
+    "label": "inside remote agent: convert_currency({'amount': 20.0, 'from_currency': 'USD', 'to_currency': 'INR'})",
+    "json": {
+     "tool_call": {
+      "name": "convert_currency",
+      "arguments": {
+       "amount": 20.0,
+       "from_currency": "USD",
+       "to_currency": "INR"
+      }
+     }
+    }
+   },
+   {
+    "seq": 16,
+    "t_ms": 139.2,
+    "from": "remote",
+    "to": "orchestrator",
+    "kind": "response",
+    "method": "message/send",
+    "label": "result: message/send (state=completed)",
+    "json": {
+     "jsonrpc": "2.0",
+     "id": 3,
+     "result": {
+      "kind": "task",
+      "id": "c4b5a76a-3012-4add-b8b4-e5d87ecb715f",
+      "contextId": "738b8aef-7ac4-4de7-833d-504186b249d7",
+      "status": {
+       "state": "completed",
+       "message": {
+        "kind": "message",
+        "role": "agent",
+        "parts": [
+         {
+          "kind": "text",
+          "text": "Done"
+         }
+        ],
+        "messageId": "39639d1e-c46f-42ea-b1c3-9d9a185876e8",
+        "taskId": "c4b5a76a-3012-4add-b8b4-e5d87ecb715f",
+        "contextId": "738b8aef-7ac4-4de7-833d-504186b249d7",
+        "metadata": {
+         "state": "completed"
+        }
+       },
+       "timestamp": "2026-09-26T11:54:06+00:00"
+      },
+      "artifacts": [
+       {
+        "artifactId": "b90970b0-0bad-46cc-924a-f548c794fee4",
+        "name": "travel-answer",
+        "description": "Answer from the travel expert",
+        "parts": [
+         {
+          "kind": "text",
+          "text": "20.0 USD = 1660.0 INR (rate 83.0)."
+         },
+         {
+          "kind": "data",
+          "data": {
+           "conversions": [
+            {
+             "amount": 20.0,
+             "from": "USD",
+             "to": "INR",
+             "rate": 83.0,
+             "converted": 1660.0
+            }
+           ]
+          }
+         }
+        ]
+       }
+      ],
+      "history": [
+       {
+        "kind": "message",
+        "role": "user",
+        "parts": [
+         {
+          "kind": "text",
+          "text": "convert 20 USD"
+         }
+        ],
+        "messageId": "2483c8d9-6a17-40c4-a4fc-12a8bb8c64ed",
+        "taskId": "c4b5a76a-3012-4add-b8b4-e5d87ecb715f",
+        "contextId": "738b8aef-7ac4-4de7-833d-504186b249d7"
+       },
+       {
+        "kind": "message",
+        "role": "agent",
+        "parts": [
+         {
+          "kind": "text",
+          "text": "Travel expert is working on it"
+         }
+        ],
+        "messageId": "7ccf2bb2-8369-4679-a1a0-cdbcb411ed2c",
+        "taskId": "c4b5a76a-3012-4add-b8b4-e5d87ecb715f",
+        "contextId": "738b8aef-7ac4-4de7-833d-504186b249d7",
+        "metadata": {
+         "state": "working"
+        }
+       },
+       {
+        "kind": "message",
+        "role": "agent",
+        "parts": [
+         {
+          "kind": "text",
+          "text": "Which currency should I convert 20 USD to?"
+         }
+        ],
+        "messageId": "58b92073-9f12-4def-9e67-bc8da6f8286d",
+        "taskId": "c4b5a76a-3012-4add-b8b4-e5d87ecb715f",
+        "contextId": "738b8aef-7ac4-4de7-833d-504186b249d7",
+        "metadata": {
+         "state": "input-required"
+        }
+       },
+       {
+        "kind": "message",
+        "role": "user",
+        "parts": [
+         {
+          "kind": "text",
+          "text": "INR"
+         }
+        ],
+        "messageId": "886b4320-d039-4b24-a0da-68eb7d7daccd",
+        "taskId": "c4b5a76a-3012-4add-b8b4-e5d87ecb715f",
+        "contextId": "738b8aef-7ac4-4de7-833d-504186b249d7"
+       },
+       {
+        "kind": "message",
+        "role": "agent",
+        "parts": [
+         {
+          "kind": "text",
+          "text": "Travel expert is working on it"
+         }
+        ],
+        "messageId": "3fd805ae-f2a7-4ba5-8d87-91d75bfe70fb",
+        "taskId": "c4b5a76a-3012-4add-b8b4-e5d87ecb715f",
+        "contextId": "738b8aef-7ac4-4de7-833d-504186b249d7",
+        "metadata": {
+         "state": "working"
+        }
+       },
+       {
+        "kind": "message",
+        "role": "agent",
+        "parts": [
+         {
+          "kind": "text",
+          "text": "calling convert_currency({'amount': 20.0, 'from_currency': 'USD', 'to_currency': 'INR'})"
+         }
+        ],
+        "messageId": "dc97c145-db73-4a10-9d59-69ffe6463310",
+        "taskId": "c4b5a76a-3012-4add-b8b4-e5d87ecb715f",
+        "contextId": "738b8aef-7ac4-4de7-833d-504186b249d7",
+        "metadata": {
+         "state": "working"
+        }
+       },
+       {
+        "kind": "message",
+        "role": "agent",
+        "parts": [
+         {
+          "kind": "text",
+          "text": "Done"
+         }
+        ],
+        "messageId": "39639d1e-c46f-42ea-b1c3-9d9a185876e8",
+        "taskId": "c4b5a76a-3012-4add-b8b4-e5d87ecb715f",
+        "contextId": "738b8aef-7ac4-4de7-833d-504186b249d7",
+        "metadata": {
+         "state": "completed"
+        }
+       }
+      ]
+     }
+    },
+    "state": "completed"
+   },
+   {
+    "seq": 17,
+    "t_ms": 139.4,
+    "from": "orchestrator",
+    "to": "user",
+    "kind": "answer",
+    "method": null,
+    "label": "final answer",
+    "json": "Answer (via remote agent, 1 agent(s) discovered): 20.0 USD = 1660.0 INR (rate 83.0)."
+   },
+   {
+    "seq": 18,
+    "t_ms": 139.4,
+    "from": "user",
+    "to": "orchestrator",
+    "kind": "human",
+    "method": null,
+    "label": "user: tips for london (streaming)",
+    "json": {
+     "content": "tips for london"
+    }
+   },
+   {
+    "seq": 19,
+    "t_ms": 139.6,
+    "from": "orchestrator",
+    "to": "remote",
+    "kind": "request",
+    "method": "message/stream",
+    "label": "message/stream",
+    "json": {
+     "http": "POST /",
+     "body": {
+      "jsonrpc": "2.0",
+      "id": 4,
+      "method": "message/stream",
+      "params": {
+       "message": {
+        "kind": "message",
+        "role": "user",
+        "parts": [
+         {
+          "kind": "text",
+          "text": "tips for london"
+         }
+        ],
+        "messageId": "332617e2-9894-4399-98a3-faf990c9f9af"
+       }
+      }
+     }
+    }
+   },
+   {
+    "seq": 20,
+    "t_ms": 140.6,
+    "from": "remote",
+    "to": "remote",
+    "kind": "internal",
+    "method": null,
+    "label": "inside remote agent: travel_tips({'city': 'london'})",
+    "json": {
+     "tool_call": {
+      "name": "travel_tips",
+      "arguments": {
+       "city": "london"
+      }
+     }
+    }
+   },
+   {
+    "seq": 21,
+    "t_ms": 192.5,
+    "from": "remote",
+    "to": "orchestrator",
+    "kind": "response",
+    "method": "message/stream",
+    "label": "200 text/event-stream (SSE opens)",
+    "json": {
+     "http": "200 text/event-stream"
+    }
+   },
+   {
+    "seq": 22,
+    "t_ms": 192.8,
+    "from": "remote",
+    "to": "orchestrator",
+    "kind": "sse",
+    "method": "message/stream",
+    "label": "SSE task (state=submitted)",
+    "json": {
+     "kind": "task",
+     "id": "370a0835-9a41-468a-988f-3a1c0f863755",
+     "contextId": "a17780c2-1224-4f06-94fc-dfaf546be803",
+     "status": {
+      "state": "submitted",
+      "timestamp": "2026-09-26T11:54:06+00:00"
+     },
+     "history": [
+      {
+       "kind": "message",
+       "role": "user",
+       "parts": [
+        {
+         "kind": "text",
+         "text": "tips for london"
+        }
+       ],
+       "messageId": "332617e2-9894-4399-98a3-faf990c9f9af",
+       "taskId": "370a0835-9a41-468a-988f-3a1c0f863755",
+       "contextId": "a17780c2-1224-4f06-94fc-dfaf546be803"
+      }
+     ]
+    },
+    "state": "submitted"
+   },
+   {
+    "seq": 23,
+    "t_ms": 192.8,
+    "from": "remote",
+    "to": "orchestrator",
+    "kind": "sse",
+    "method": "message/stream",
+    "label": "SSE status-update (state=working)",
+    "json": {
+     "kind": "status-update",
+     "taskId": "370a0835-9a41-468a-988f-3a1c0f863755",
+     "contextId": "a17780c2-1224-4f06-94fc-dfaf546be803",
+     "status": {
+      "state": "working",
+      "message": {
+       "kind": "message",
+       "role": "agent",
+       "parts": [
+        {
+         "kind": "text",
+         "text": "Travel expert is working on it"
+        }
+       ],
+       "messageId": "867ab195-f1bd-4edb-a6b5-ebf0f12f8f53",
+       "taskId": "370a0835-9a41-468a-988f-3a1c0f863755",
+       "contextId": "a17780c2-1224-4f06-94fc-dfaf546be803",
+       "metadata": {
+        "state": "working"
+       }
+      },
+      "timestamp": "2026-09-26T11:54:06+00:00"
+     },
+     "final": false
+    },
+    "state": "working"
+   },
+   {
+    "seq": 24,
+    "t_ms": 192.8,
+    "from": "remote",
+    "to": "orchestrator",
+    "kind": "sse",
+    "method": "message/stream",
+    "label": "SSE status-update (state=working)",
+    "json": {
+     "kind": "status-update",
+     "taskId": "370a0835-9a41-468a-988f-3a1c0f863755",
+     "contextId": "a17780c2-1224-4f06-94fc-dfaf546be803",
+     "status": {
+      "state": "working",
+      "message": {
+       "kind": "message",
+       "role": "agent",
+       "parts": [
+        {
+         "kind": "text",
+         "text": "calling travel_tips({'city': 'london'})"
+        }
+       ],
+       "messageId": "3f127140-3453-4316-a412-f7008d773fe3",
+       "taskId": "370a0835-9a41-468a-988f-3a1c0f863755",
+       "contextId": "a17780c2-1224-4f06-94fc-dfaf546be803",
+       "metadata": {
+        "state": "working"
+       }
+      },
+      "timestamp": "2026-09-26T11:54:06+00:00"
+     },
+     "final": false
+    },
+    "state": "working"
+   },
+   {
+    "seq": 25,
+    "t_ms": 192.9,
+    "from": "remote",
+    "to": "orchestrator",
+    "kind": "sse",
+    "method": "message/stream",
+    "label": "SSE artifact-update",
+    "json": {
+     "kind": "artifact-update",
+     "taskId": "370a0835-9a41-468a-988f-3a1c0f863755",
+     "contextId": "a17780c2-1224-4f06-94fc-dfaf546be803",
+     "artifact": {
+      "artifactId": "4353b2f2-031b-4f3b-b8e4-4e9c0a401732",
+      "name": "travel-answer",
+      "description": "Answer from the travel expert",
+      "parts": [
+       {
+        "kind": "text",
+        "text": "Tips: Use contactless for the Tube (daily cap applies); museums are mostly free; carry an umbrella."
+       }
+      ]
+     },
+     "lastChunk": true
+    },
+    "state": null
+   },
+   {
+    "seq": 26,
+    "t_ms": 192.9,
+    "from": "remote",
+    "to": "orchestrator",
+    "kind": "sse",
+    "method": "message/stream",
+    "label": "SSE status-update (state=completed)",
+    "json": {
+     "kind": "status-update",
+     "taskId": "370a0835-9a41-468a-988f-3a1c0f863755",
+     "contextId": "a17780c2-1224-4f06-94fc-dfaf546be803",
+     "status": {
+      "state": "completed",
+      "message": {
+       "kind": "message",
+       "role": "agent",
+       "parts": [
+        {
+         "kind": "text",
+         "text": "Done"
+        }
+       ],
+       "messageId": "b61ebe02-bad5-4c4a-b2e1-da229bda02fe",
+       "taskId": "370a0835-9a41-468a-988f-3a1c0f863755",
+       "contextId": "a17780c2-1224-4f06-94fc-dfaf546be803",
+       "metadata": {
+        "state": "completed"
+       }
+      },
+      "timestamp": "2026-09-26T11:54:06+00:00"
+     },
+     "final": true
+    },
+    "state": "completed"
+   },
+   {
+    "seq": 27,
+    "t_ms": 193.1,
+    "from": "orchestrator",
+    "to": "remote",
+    "kind": "request",
+    "method": "tasks/get",
+    "label": "tasks/get",
+    "json": {
+     "http": "POST /",
+     "body": {
+      "jsonrpc": "2.0",
+      "id": 5,
+      "method": "tasks/get",
+      "params": {
+       "id": "370a0835-9a41-468a-988f-3a1c0f863755"
+      }
+     }
+    }
+   },
+   {
+    "seq": 28,
+    "t_ms": 193.6,
+    "from": "remote",
+    "to": "orchestrator",
+    "kind": "response",
+    "method": "tasks/get",
+    "label": "result: tasks/get (state=completed)",
+    "json": {
+     "jsonrpc": "2.0",
+     "id": 5,
+     "result": {
+      "kind": "task",
+      "id": "370a0835-9a41-468a-988f-3a1c0f863755",
+      "contextId": "a17780c2-1224-4f06-94fc-dfaf546be803",
+      "status": {
+       "state": "completed",
+       "message": {
+        "kind": "message",
+        "role": "agent",
+        "parts": [
+         {
+          "kind": "text",
+          "text": "Done"
+         }
+        ],
+        "messageId": "b61ebe02-bad5-4c4a-b2e1-da229bda02fe",
+        "taskId": "370a0835-9a41-468a-988f-3a1c0f863755",
+        "contextId": "a17780c2-1224-4f06-94fc-dfaf546be803",
+        "metadata": {
+         "state": "completed"
+        }
+       },
+       "timestamp": "2026-09-26T11:54:06+00:00"
+      },
+      "artifacts": [
+       {
+        "artifactId": "4353b2f2-031b-4f3b-b8e4-4e9c0a401732",
+        "name": "travel-answer",
+        "description": "Answer from the travel expert",
+        "parts": [
+         {
+          "kind": "text",
+          "text": "Tips: Use contactless for the Tube (daily cap applies); museums are mostly free; carry an umbrella."
+         }
+        ]
+       }
+      ],
+      "history": [
+       {
+        "kind": "message",
+        "role": "user",
+        "parts": [
+         {
+          "kind": "text",
+          "text": "tips for london"
+         }
+        ],
+        "messageId": "332617e2-9894-4399-98a3-faf990c9f9af",
+        "taskId": "370a0835-9a41-468a-988f-3a1c0f863755",
+        "contextId": "a17780c2-1224-4f06-94fc-dfaf546be803"
+       },
+       {
+        "kind": "message",
+        "role": "agent",
+        "parts": [
+         {
+          "kind": "text",
+          "text": "Travel expert is working on it"
+         }
+        ],
+        "messageId": "867ab195-f1bd-4edb-a6b5-ebf0f12f8f53",
+        "taskId": "370a0835-9a41-468a-988f-3a1c0f863755",
+        "contextId": "a17780c2-1224-4f06-94fc-dfaf546be803",
+        "metadata": {
+         "state": "working"
+        }
+       },
+       {
+        "kind": "message",
+        "role": "agent",
+        "parts": [
+         {
+          "kind": "text",
+          "text": "calling travel_tips({'city': 'london'})"
+         }
+        ],
+        "messageId": "3f127140-3453-4316-a412-f7008d773fe3",
+        "taskId": "370a0835-9a41-468a-988f-3a1c0f863755",
+        "contextId": "a17780c2-1224-4f06-94fc-dfaf546be803",
+        "metadata": {
+         "state": "working"
+        }
+       },
+       {
+        "kind": "message",
+        "role": "agent",
+        "parts": [
+         {
+          "kind": "text",
+          "text": "Done"
+         }
+        ],
+        "messageId": "b61ebe02-bad5-4c4a-b2e1-da229bda02fe",
+        "taskId": "370a0835-9a41-468a-988f-3a1c0f863755",
+        "contextId": "a17780c2-1224-4f06-94fc-dfaf546be803",
+        "metadata": {
+         "state": "completed"
+        }
+       }
+      ]
+     }
+    },
+    "state": "completed"
+   },
+   {
+    "seq": 29,
+    "t_ms": 193.7,
+    "from": "orchestrator",
+    "to": "user",
+    "kind": "answer",
+    "method": null,
+    "label": "final answer (streamed)",
+    "json": "Tips: Use contactless for the Tube (daily cap applies); museums are mostly free; carry an umbrella."
+   }
+  ]
+ }
+}
