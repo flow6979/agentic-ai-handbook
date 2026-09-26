@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # 04 · Hierarchical Teams — Manager of managers
 
 ## Seedhi baat

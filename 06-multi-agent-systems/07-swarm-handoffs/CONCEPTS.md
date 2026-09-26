@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # 07 · Swarm & Handoffs — Bina boss ke team
 
 ## Seedhi baat

@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # 06 · Debate & Judge — Behas se sach nikalna
 
 ## Seedhi baat

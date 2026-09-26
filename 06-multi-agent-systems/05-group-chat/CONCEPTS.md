@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # 05 · Group Chat — Sab ek room mein baat karte hain
 
 ## Seedhi baat

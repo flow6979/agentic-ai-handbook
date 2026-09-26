@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # 03 · Supervisor Team — Ek manager, kai workers
 
 ## Seedhi baat

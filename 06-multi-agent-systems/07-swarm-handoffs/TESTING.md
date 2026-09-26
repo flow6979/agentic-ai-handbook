@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](TESTING.en.md)
+
 # 07 · Swarm & Handoffs — Test & Tinker
 
 ## Run

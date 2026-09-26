@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](TESTING.en.md)
+
 # 01 · Role Design Basics — Test & Tinker
 
 ## Setup (repo root se, ek baar)

@@ -1,33 +1,33 @@
-**Language:** Hinglish · [English](README.en.md)
+**Language:** [Hinglish](README.md) · English
 
 # 06 · Multi-Agent Systems (with Roles)
 
-> Ek agent = ek LLM + tools + loop. **Multi-agent system** = kai agents, har ek ka alag **role**, jo milke ek goal pe kaam karte hain.
+> One agent = one LLM + tools + a loop. A **multi-agent system** = many agents, each with its own **role**, working together towards one goal.
 
-## Multi-agent system banta kis se hai?
+## What is a multi-agent system made of?
 
 ```
 ┌───────────────────────────────────────────────────────────────────┐
 │                       MULTI-AGENT SYSTEM                          │
 │                                                                   │
-│  1. ROLES        kaun kya hai (persona, goal, tools, rules)       │
-│  2. GOAL         poori team ka common objective                   │
+│  1. ROLES        who is who (persona, goal, tools, rules)         │
+│  2. GOAL         the whole team's shared objective                │
 │  3. CONTEXT      shared (board/transcript) vs private (per-role)  │
-│  4. COORDINATION agla kaun kaam karega? (code / manager / peer)   │
-│  5. TERMINATION  kab rukna hai? (done / budget / guard)           │
-│  6. COMMUNICATION messages kaise jaate hain → section 05          │
+│  4. COORDINATION who works next? (code / manager / peer)          │
+│  5. TERMINATION  when to stop? (done / budget / guard)            │
+│  6. COMMUNICATION how messages travel → section 05                │
 └───────────────────────────────────────────────────────────────────┘
 ```
 
-| Building block | Sawaal | Galat hua to |
+| Building block | Question | If it goes wrong |
 |---|---|---|
-| Roles | Har agent ki zimmedari kya hai? | Role drift, duplicate kaam |
-| Goal | Team ko kya deliver karna hai? | Agents alag disha mein bhaagte hain |
-| Shared vs private context | Kisko kitna dikhna chahiye? | Context bleeding, cost blow-up |
-| Coordination | Next step kaun decide karta hai? | Chaos ya bottleneck |
-| Termination | Kab "done" hai? | Infinite ping-pong, bill 💸 |
+| Roles | What is each agent responsible for? | Role drift, duplicated work |
+| Goal | What does the team have to deliver? | Agents run in different directions |
+| Shared vs private context | Who should see how much? | Context bleeding, cost blow-up |
+| Coordination | Who decides the next step? | Chaos or a bottleneck |
+| Termination | When is it "done"? | Infinite ping-pong, a big bill 💸 |
 
-## Topologies ka map
+## Map of topologies
 
 ```
  SEQUENTIAL (02)          SUPERVISOR (03)            HIERARCHICAL (04)
@@ -45,7 +45,7 @@
  (selector picks speaker)                            (peer handoffs)
 ```
 
-## Projects (is order mein padho)
+## Projects (read them in this order)
 
 | # | Project | Topology | Example | Key concepts |
 |---|---|---|---|---|
@@ -57,62 +57,62 @@
 | 06 | [debate-and-judge](06-debate-and-judge/) | Adversarial | Motion debate | Rubric judge, jury, self-consistency, mixture-of-agents |
 | 07 | [swarm-handoffs](07-swarm-handoffs/) | Peer mesh | Customer support | Handoff-as-tool, context variables, ping-pong guard |
 
-Har project mein:
-- `CONCEPTS.md`: concept Hinglish mein, diagrams ke saath, aur "is project mein kaise use ho raha hai"
-- `TESTING.md`: kaise chalayein, tests, traces mein kya dekhein, tinker exercises
-- `main.py --offline`: bina API key ke chalta hai (role-aware fake LLM)
+Every project has:
+- `CONCEPTS.md` / `CONCEPTS.en.md`: the concept with diagrams, plus "how this project uses it"
+- `TESTING.md` / `TESTING.en.md`: how to run it, the tests, what to look for in traces, tinker exercises
+- `main.py --offline`: runs without an API key (role-aware fake LLM)
 - `test_*.py`: offline tests (`pytest 06-multi-agent-systems`)
 
 ## Multi-LLM teams
 
-Har project mein `llm_for(role)` hai: pehle `LLM_MODEL_<ROLE>` env dekhta hai, na mile to `LLM_MODEL`.
+Every project has `llm_for(role)`: it first checks the `LLM_MODEL_<ROLE>` env var, and falls back to `LLM_MODEL` if it is not set.
 
 ```bash
-LLM_MODEL=groq:llama-3.1-8b-instant            # sab workers: sasta + fast
+LLM_MODEL=groq:llama-3.1-8b-instant            # all workers: cheap + fast
 LLM_MODEL_SUPERVISOR=anthropic:claude-sonnet-5 # routing/judging: strong
-LLM_MODEL_JUDGE2=gemini:gemini-2.5-flash       # jury mein alag provider = kam bias
+LLM_MODEL_JUDGE2=gemini:gemini-2.5-flash       # a different provider in the jury = less bias
 ```
 
-Rule of thumb: **planning, routing aur judging ke liye strong model; bulk generation ke liye sasta model.**
+Rule of thumb: **use a strong model for planning, routing and judging; use a cheap model for bulk generation.**
 
-## Kaunsa pattern kab?
+## Which pattern when?
 
 ```
-Kaam ka order pehle se pata hai?  ── haan ──► SEQUENTIAL (02)
-        │ nahi
+Is the order of work known up front?  ── yes ──► SEQUENTIAL (02)
+        │ no
         ▼
-Workers 5 se zyada / alag domains? ── haan ──► HIERARCHICAL (04)
-        │ nahi
+More than 5 workers / different domains? ── yes ──► HIERARCHICAL (04)
+        │ no
         ▼
-Conversation-style routing (support)? ── haan ──► SWARM (07)
-        │ nahi
+Conversation-style routing (support)? ── yes ──► SWARM (07)
+        │ no
         ▼
-Multiple perspectives / negotiation? ── haan ──► GROUP CHAT (05) / DEBATE (06)
-        │ nahi
+Multiple perspectives / negotiation? ── yes ──► GROUP CHAT (05) / DEBATE (06)
+        │ no
         ▼
                 SUPERVISOR (03)
 ```
 
-Aur sabse pehle yeh poochho: **kya ek hi agent + achhe tools kaafi hai?** Multi-agent = zyada cost, latency, aur debugging. Zaroorat ho tabhi use karo.
+And ask this first of all: **is a single agent with good tools enough?** Multi-agent means more cost, more latency and harder debugging. Use it only when you actually need it.
 
-## Popular frameworks se mapping
+## Mapping to popular frameworks
 
-| Is repo mein | CrewAI | AutoGen / AG2 | LangGraph | OpenAI Agents SDK |
+| In this repo | CrewAI | AutoGen / AG2 | LangGraph | OpenAI Agents SDK |
 |---|---|---|---|---|
 | `Role` (01, 02) | `Agent(role, goal, backstory)` | `AssistantAgent(system_message)` | node + prompt | `Agent(instructions)` |
-| `Task` + context (02) | `Task(description, expected_output, context=[...])` | — | state keys | — |
+| `Task` + context (02) | `Task(description, expected_output, context=[...])` | - | state keys | - |
 | Sequential crew (02) | `Process.sequential` | `SequentialChat` / nested chats | linear graph edges | chained runs |
 | Supervisor (03) | `Process.hierarchical` (manager_llm) | `SelectorGroupChat` | `langgraph-supervisor` | orchestrator agent + agents-as-tools |
 | Hierarchical (04) | hierarchical crew with sub-crews | nested group chats | subgraphs | agents-as-tools nested |
-| Group chat (05) | — | `GroupChat` + `GroupChatManager`, `RoundRobinGroupChat` | shared-state loop | — |
-| Debate / jury (06) | — | multi-agent debate examples | parallel branches + judge node | parallel runs + judge |
-| Swarm handoffs (07) | — | `Swarm` team (handoffs) | `langgraph-swarm` | `handoffs=[...]` (native) |
+| Group chat (05) | - | `GroupChat` + `GroupChatManager`, `RoundRobinGroupChat` | shared-state loop | - |
+| Debate / jury (06) | - | multi-agent debate examples | parallel branches + judge node | parallel runs + judge |
+| Swarm handoffs (07) | - | `Swarm` team (handoffs) | `langgraph-swarm` | `handoffs=[...]` (native) |
 
-Frameworks yeh sab ready-made dete hain. Yahan hum from scratch bana rahe hain taaki andar ka mechanism samajh aaye. Framework use karte waqt bhi yahi concepts (roles, context, termination) debug karne padte hain.
+Frameworks give you all of this ready-made. Here we build it from scratch so the mechanism underneath makes sense. Even when you use a framework, these are the same concepts (roles, context, termination) you end up debugging.
 
 ## Communication mechanisms?
 
-Agents **kaise** messages bhejte hain (in-process calls, shared blackboard, pub/sub, HTTP, **MCP**, **A2A**) woh **section 05 · agent-communication** mein hai. Yeh section **organisation** pe focus karta hai: kaun kya karega aur kaun kisko report karega.
+**How** agents send messages (in-process calls, shared blackboard, pub/sub, HTTP, **MCP**, **A2A**) is covered in **section 05 · agent-communication**. This section focuses on **organisation**: who does what and who reports to whom.
 
 ## Run everything
 

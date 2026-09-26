@@ -1,6 +1,6 @@
-**Language:** Hinglish · [English](TESTING.en.md)
+**Language:** [Hinglish](TESTING.md) · English
 
-# 06 · Debate & Judge — Test & Tinker
+# 06 · Debate & Judge: Test & Tinker
 
 ## Run
 
@@ -32,23 +32,23 @@ Expected (offline): debate → `Jury votes: ['pro', 'con', 'pro']`, `WINNER: pro
 pytest 06-multi-agent-systems/06-debate-and-judge -v
 ```
 
-| Test | Kya prove karta hai |
+| Test | What it proves |
 |---|---|
 | `test_debate_rounds_alternate_and_judge_scores` | PRO/CON alternate, rubric totals, winner |
-| `test_debaters_see_opponent_history` | CON ko PRO ka argument dikhta hai (rebuttal possible) |
+| `test_debaters_see_opponent_history` | CON sees PRO's argument (so rebuttal is possible) |
 | `test_jury_majority_vote` | 3 judges → majority |
 | `test_self_consistency_majority` | Majority answer + vote counts |
-| `test_mixture_of_agents_uses_all_proposers` | Aggregator ko saare proposer answers milte hain |
+| `test_mixture_of_agents_uses_all_proposers` | The aggregator receives every proposer's answer |
 
-## Traces mein kya dekhna hai
+## What to look for in traces
 
-`[debate:llm] R2 CON: ...`: kya round 2 mein sach mein PRO ke point ka jawab hai, ya same baat repeat ho rahi hai? Repeat ho rahi hai to prompt mein "address the opponent's LAST point by quoting it" add karo.
+`[debate:llm] R2 CON: ...`: does round 2 actually answer PRO's point, or is it repeating the same thing? If it repeats, add "address the opponent's LAST point by quoting it" to the prompt.
 
-## Tinker karo 🔧
+## Tinker 🔧
 
-1. **Position bias test**: `debate()` mein CON ko pehle bulwao (order swap) aur judge verdicts compare karo.
-2. **3-way debate**: ek "neutral pragmatist" debater add karo. Verdict schema update karna padega.
-3. **Tie-break**: jury votes tie hon to rubric totals ka average use karo. Implement karo.
-4. **Self-consistency with temperature=0**: sab samples same aayenge. Dekho aur samjho ki diversity kyun zaroori hai.
-5. **Judge ko debate ke beech bulao**: har round ke baad judge bataye kaun aage hai, aur jo peeche ho usse hint mile.
-6. **MoA 2 layers**: aggregator ke output ko phir proposers ko "improve this" ke saath bhejo, phir final aggregate karo.
+1. **Position bias test**: have CON go first in `debate()` (swap the order) and compare the judge verdicts.
+2. **3-way debate**: add a "neutral pragmatist" debater. You will need to update the Verdict schema.
+3. **Tie-break**: if the jury votes are tied, use the average of the rubric totals. Implement it.
+4. **Self-consistency with temperature=0**: every sample will come back the same. Watch this and understand why diversity matters.
+5. **Call the judge mid-debate**: after every round the judge says who is ahead, and whoever is behind gets a hint.
+6. **MoA with 2 layers**: send the aggregator's output back to the proposers with "improve this", then aggregate a final time.
