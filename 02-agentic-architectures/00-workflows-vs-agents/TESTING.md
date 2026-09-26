@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](TESTING.en.md)
+
 # Testing: workflows vs agents demo
 
 ## Setup (repo root se, ek baar)

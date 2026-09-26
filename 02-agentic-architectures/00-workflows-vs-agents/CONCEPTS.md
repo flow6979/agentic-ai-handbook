@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # Workflows vs Agents: poora spectrum
 
 > Sabse pehla sawaal jo har AI system banate waqt poochna chahiye:

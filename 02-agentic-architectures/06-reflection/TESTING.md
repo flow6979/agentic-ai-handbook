@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](TESTING.en.md)
+
 # 06-reflection: Testing aur tinkering
 
 ## Setup

@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # Reflection: agent jo apna kaam khud check karke sudhaarta hai
 
 ## 1. Idea

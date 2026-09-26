@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](TESTING.en.md)
+
 # Testing: prompt chaining (blog writer)
 
 ## Setup

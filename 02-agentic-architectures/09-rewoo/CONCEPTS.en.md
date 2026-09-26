@@ -1,24 +1,24 @@
-**Language:** Hinglish · [English](CONCEPTS.en.md)
+**Language:** [Hinglish](CONCEPTS.md) · English
 
 # ReWOO: Reasoning WithOut Observation
 
-## 1. ReAct ki problem
+## 1. The problem with ReAct
 
-ReAct mein har tool call ke baad LLM dobara call hota hai, aur har baar **poori history** (system
-prompt + tool schemas + saare pichle steps) dobara bheji jaati hai. 5 tool calls = 6 LLM calls,
-aur har call pichle se bada.
+In ReAct the LLM is called again after every tool call, and each time the **whole history** (system
+prompt + tool schemas + all previous steps) is sent again. 5 tool calls = 6 LLM calls,
+and each call is bigger than the last.
 
 ```
 ReAct:   LLM ─► tool ─► LLM ─► tool ─► LLM ─► tool ─► LLM ─► answer
-         [ctx]         [ctx+1]        [ctx+2]        [ctx+3]      ← context har baar badhta hai
+         [ctx]         [ctx+1]        [ctx+2]        [ctx+3]      ← the context grows every time
 ```
 
-Bahut tasks mein saare tool calls **pehle se** pata hote hain. "Everest aur Eiffel ki height lao,
-divide karo": iske liye beech mein sochne ki zaroorat hi nahi.
+In many tasks all the tool calls are known **up front**. "Get the heights of Everest and the Eiffel Tower,
+then divide": there is no need to think in between.
 
-## 2. ReWOO ka idea
+## 2. The ReWOO idea
 
-Paper: Xu et al., 2023. Teen modules:
+Paper: Xu et al., 2023. Three modules:
 
 ```
                     ┌──────────────────────────────────────┐
@@ -32,7 +32,7 @@ Paper: Xu et al., 2023. Teen modules:
                     └──────────────────┬───────────────────┘
                                        ▼
                     ┌──────────────────────────────────────┐
-                    │ WORKERS (koi LLM nahi*)              │
+                    │ WORKERS (no LLM*)                    │
                     │  #E1 → "8849"                        │
                     │  #E2 → "330"      (parallel!)        │
                     │  #E3 = calculator["8849 / 330"]      │  ← substitute
@@ -43,14 +43,14 @@ Paper: Xu et al., 2023. Teen modules:
                     │ SOLVER (1 LLM call)                  │
                     │ plan + evidence → final answer       │
                     └──────────────────────────────────────┘
-   * sirf "LLM[...]" worker use ho to wahan LLM call hota hai
+   * an LLM call happens only where an "LLM[...]" worker is used
 ```
 
-**Result:** 5 tool calls ke liye bhi sirf 2 LLM calls (planner + solver). Tokens bahut kam.
+**Result:** even for 5 tool calls, only 2 LLM calls (planner + solver). Far fewer tokens.
 
-## 3. Variables (#E1, #E2) aur dependency graph
+## 3. Variables (#E1, #E2) and the dependency graph
 
-Plan actually ek **DAG** (dependency graph) hai:
+The plan is actually a **DAG** (dependency graph):
 
 ```
    #E1 (everest) ──┐
@@ -58,45 +58,45 @@ Plan actually ek **DAG** (dependency graph) hai:
    #E2 (eiffel) ───┘                        ▲
    #E3 (japan) ─────────────────────────────┘
 
-   level 0: [#E1, #E2, #E3]   ← ek doosre pe depend nahi → PARALLEL
+   level 0: [#E1, #E2, #E3]   ← they don't depend on each other → PARALLEL
    level 1: [#E4]
    level 2: [#E5]
 ```
 
-`dependency_levels()` yahi levels nikaalta hai, aur same level ke workers `ThreadPoolExecutor`
-mein parallel chalte hain. (LLMCompiler paper isi idea ko aage le jata hai: streaming DAG execution.)
+`dependency_levels()` computes exactly these levels, and the workers of the same level run in parallel
+in a `ThreadPoolExecutor`. (The LLMCompiler paper takes this idea further: streaming DAG execution.)
 
 ## 4. ReAct vs Plan-and-Execute vs ReWOO
 
 | | ReAct | Plan-and-Execute | ReWOO |
 |---|---|---|---|
-| LLM calls | har tool ke baad | plan + har step executor + replanner | **2** (planner + solver) |
-| Adaptivity | bahut zyada | medium (replanner) | **kam**: plan fix hai |
-| Tokens | zyada (history repeat) | medium | **kam** |
+| LLM calls | after every tool | plan + executor per step + replanner | **2** (planner + solver) |
+| Adaptivity | very high | medium (replanner) | **low**: the plan is fixed |
+| Tokens | high (history repeated) | medium | **low** |
 | Latency | high | high | low (parallel workers) |
-| Failure handling | model turant react karta hai | replan | solver ko ERROR evidence milta hai, bas |
-| Best for | exploratory tasks | lambe multi-step tasks | predictable, tool-heavy tasks |
+| Failure handling | the model reacts immediately | replan | the solver just gets ERROR evidence |
+| Best for | exploratory tasks | long multi-step tasks | predictable, tool-heavy tasks |
 
-**Trade-off:** ReWOO "andha" execute karta hai. Agar #E1 fail hua ya unexpected result aaya, plan
-nahi badalta. Fix: failure pe replan (hybrid), ya ReAct pe fallback.
+**Trade-off:** ReWOO executes "blindly". If #E1 fails or returns something unexpected, the plan
+doesn't change. Fix: replan on failure (hybrid), or fall back to ReAct.
 
 ## 5. Variants
 
-- **ReWOO (yeh project):** sequential/level-parallel workers.
-- **LLMCompiler:** planner stream karta hai, tasks DAG scheduler pe jaise hi deps ready ho chalne lagte hain; failure pe re-plan ("joiner").
-- **Plan-then-verify:** solver se pehle evidence validate karo.
-- **Hybrid:** ReWOO try karo; koi evidence ERROR ho to ReAct/replanner pe gir jao.
+- **ReWOO (this project):** sequential/level-parallel workers.
+- **LLMCompiler:** the planner streams, and tasks start on a DAG scheduler as soon as their deps are ready; re-plan on failure (the "joiner").
+- **Plan-then-verify:** validate the evidence before the solver.
+- **Hybrid:** try ReWOO; if any evidence is an ERROR, fall back to ReAct/a replanner.
 
 ## 6. Production pitfalls
 
-- **Plan parsing strict rakho:** unknown tool, undefined variable reference → turant error (`parse_plan`).
-  Model ke plan ko blindly execute mat karo.
-- **Substitution ke type issues:** `#E1` ka output "8849 metres" ho to calculator fail. Isliye tools ka
-  output clean/predictable rakho, ya beech mein `LLM[extract number from #E1]` step lo.
-- **Injection:** tool output (web page) substitute hoke doosre tool ka input ban jaata hai. Validate karo.
-- **Thread safety:** parallel workers shared counters update karte hain → lock (`self._lock`).
+- **Keep plan parsing strict:** unknown tool, undefined variable reference → error immediately (`parse_plan`).
+  Never execute the model's plan blindly.
+- **Type issues with substitution:** if `#E1` outputs "8849 metres", the calculator fails. So keep tool
+  outputs clean/predictable, or add an `LLM[extract number from #E1]` step in between.
+- **Injection:** a tool output (a web page) gets substituted and becomes another tool's input. Validate it.
+- **Thread safety:** parallel workers update shared counters → lock (`self._lock`).
 
-## 7. Is project mein kaise use ho raha hai
+## 7. How this project uses it
 
 | Concept | File / function |
 |---|---|

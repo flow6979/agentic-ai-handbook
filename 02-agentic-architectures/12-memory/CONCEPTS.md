@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # Agent Memory
 
 ## 1. LLM ki yaaddasht nahi hoti

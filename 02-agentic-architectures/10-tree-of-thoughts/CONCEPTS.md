@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # Tree of Thoughts (ToT)
 
 ## 1. Chain of Thought ki limit

@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](TESTING.en.md)
+
 # 10-tree-of-thoughts: Testing aur tinkering
 
 ## Setup

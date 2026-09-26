@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](TESTING.en.md)
+
 # 05-plan-and-execute: Testing aur tinkering
 
 ## Setup

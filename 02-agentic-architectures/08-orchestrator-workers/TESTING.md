@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](TESTING.en.md)
+
 # Testing: orchestrator-workers (launch kit builder)
 
 ## Setup

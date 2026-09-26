@@ -1,12 +1,12 @@
-**Language:** Hinglish · [English](CONCEPTS.en.md)
+**Language:** [Hinglish](CONCEPTS.md) · English
 
 # Evaluator-Optimizer
 
-## 1. Concept kya hai?
+## 1. What is the concept?
 
-Do roles: **Generator** (likhta hai) aur **Evaluator** (rubric pe judge karta hai aur specific feedback deta hai).
-Feedback generator ko wapas jaata hai, woh sudhaarta hai. Loop tab tak chalta hai jab tak quality bar pass na ho
-ya budget khatam na ho. Bilkul writer + editor ki tarah.
+Two roles: a **Generator** (writes) and an **Evaluator** (judges against a rubric and gives specific feedback).
+The feedback goes back to the generator, which improves the draft. The loop runs until the quality bar is met
+or the budget runs out. Exactly like a writer and an editor.
 
 ```
             ┌───────────────────────────────────────────────────────────────┐
@@ -22,24 +22,24 @@ ya budget khatam na ho. Bilkul writer + editor ki tarah.
             │    │                         │              │                 │
             │    └──── feedback ◄──────────┴──────────────┘                 │
             │                                                               │
-            └── STOP when: (1) sab scores >= threshold  -> "passed"        ─┘
-                           (2) max_iters                -> "max_iters"
-                           (3) score `patience` baar se nahi badha -> "no_improvement"
-                 return: BEST attempt (last nahi!)
+            └── STOP when: (1) all scores >= threshold    -> "passed"      ─┘
+                           (2) max_iters                  -> "max_iters"
+                           (3) score did not rise for `patience` rounds -> "no_improvement"
+                 return: the BEST attempt (not the last one!)
 ```
 
-## 2. Reflection se farak? (06-reflection dekho)
+## 2. How is it different from Reflection? (see 06-reflection)
 
 | | Reflection | Evaluator-Optimizer |
 |---|---|---|
-| Kaun critique karta hai | Same agent khud ko | Alag evaluator (alag prompt, ideally alag model) |
-| Criteria | Open "kya improve ho sakta hai?" | **Explicit rubric** + scores |
-| Stop | Often fixed rounds | Threshold / no-improvement / budget |
+| Who critiques | The same agent critiques itself | A separate evaluator (different prompt, ideally a different model) |
+| Criteria | Open-ended "what can be improved?" | **Explicit rubric** + scores |
+| Stop | Often a fixed number of rounds | Threshold / no-improvement / budget |
 
-Evaluator-optimizer tab chamakta hai jab **clear evaluation criteria** hon aur iteration se measurable fayda ho
-(translation nuance, copy writing, code jo tests pass kare, SQL jo query validate kare).
+Evaluator-optimizer shines when there are **clear evaluation criteria** and iteration brings a measurable gain
+(translation nuance, copywriting, code that must pass tests, SQL that must validate).
 
-## 3. Evaluator ke types
+## 3. Types of evaluators
 
 ```
  cheapest ─────────────────────────────────────────────────────────► costliest
@@ -51,36 +51,36 @@ Evaluator-optimizer tab chamakta hai jab **clear evaluation criteria** hon aur i
  └─────────────┘   └──────────────────┘   └─────────────────┘   └──────────────┘
    deterministic      ground truth           subjective quality     final authority
 ```
-**Order matters**: pehle sasti deterministic checks. Fail ho to LLM judge pe paisa mat kharcho
-(`optimize()` yahi karta hai: hard fail -> evaluator skip).
+**Order matters**: run the cheap deterministic checks first. If they fail, don't spend money on the LLM judge
+(`optimize()` does exactly this: hard fail -> evaluator skipped).
 
-## 4. Stop criteria (teeno zaroori)
+## 4. Stop criteria (all three are required)
 
-1. **Passed**: har criterion `>= threshold`. (Total score nahi, har criterion: ek bahut weak criterion ko doosre ka high score chhupa na de.)
-2. **max_iters**: cost/latency ka hard cap.
-3. **No improvement (patience)**: LLMs kabhi kabhi "improve" karte karte bigaadte hain (oscillation). Isliye **best** attempt return karo, last nahi.
+1. **Passed**: every criterion `>= threshold`. (Not the total score but each criterion, so that a high score on one criterion cannot hide a very weak one.)
+2. **max_iters**: a hard cap on cost/latency.
+3. **No improvement (patience)**: LLMs sometimes make things worse while "improving" them (oscillation). That is why you return the **best** attempt, not the last.
 
-## 5. Kab use karein / kab nahi
+## 5. When to use it / when not to
 
-Use karo:
-- Clear rubric hai aur human feedback se output sach mein better hota hai.
-- Pehla draft aksar "almost" hota hai.
+Use it when:
+- There is a clear rubric and feedback genuinely makes the output better.
+- The first draft is usually "almost there".
 
-Mat karo:
-- Evaluator reliable nahi (vague criteria) -> loop random walk ban jaata hai.
-- Latency critical (har iteration 2 calls).
-- Ek acche prompt se pehli baar mein kaam ho jaata hai.
+Don't use it when:
+- The evaluator is unreliable (vague criteria) -> the loop becomes a random walk.
+- Latency is critical (every iteration costs 2 calls).
+- A good prompt already gets it right the first time.
 
 ## 6. Production pitfalls
 
-- **Self-grading bias**: same model apna kaam zyada achha rate karta hai. Evaluator alag model rakho (`EVAL_MODEL`).
-- **Lenient judge**: sab ko 9/10. Prompt mein "be strict, 8+ = genuinely great" + few-shot examples do; judge ko calibrate karo.
-- **Vague feedback**: "make it better" useless hai. Evaluator se *specific, actionable* feedback maango.
-- **Missing criteria**: judge ne kisi criterion ka score hi nahi diya -> 0 maano (`evaluate()` yahi karta hai), silently pass mat karo.
-- **Oscillation**: best-so-far track karo.
-- **LLM se counting**: character/hashtag count code se karo, LLM galat ginta hai.
+- **Self-grading bias**: a model rates its own work too highly. Use a different model for the evaluator (`EVAL_MODEL`).
+- **Lenient judge**: everything gets 9/10. Say "be strict, 8+ = genuinely great" in the prompt, add few-shot examples, and calibrate the judge.
+- **Vague feedback**: "make it better" is useless. Ask the evaluator for *specific, actionable* feedback.
+- **Missing criteria**: the judge didn't score a criterion at all -> treat it as 0 (`evaluate()` does this); never pass silently.
+- **Oscillation**: track the best-so-far.
+- **Counting with an LLM**: count characters/hashtags in code; LLMs miscount.
 
-## 7. Is project mein kaise use ho raha hai
+## 7. How this project uses it
 
 | Concept | File / function |
 |---|---|

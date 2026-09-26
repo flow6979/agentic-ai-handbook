@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # Parallelization
 
 ## 1. Concept kya hai?

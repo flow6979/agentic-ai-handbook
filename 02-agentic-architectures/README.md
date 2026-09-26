@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](README.en.md)
+
 # 02 · Agentic Architectures
 
 Is section mein har popular agent architecture ka **from-scratch implementation** hai: koi LangChain/LangGraph

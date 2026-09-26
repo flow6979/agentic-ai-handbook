@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](TESTING.en.md)
+
 # Testing: parallelization (code review + moderation)
 
 ## Setup
