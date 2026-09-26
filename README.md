@@ -12,6 +12,10 @@ Har project bina API key ke bhi chalta hai (`--offline` mode aur offline tests),
 
 Repo ka har doc do bhashaon mein hai (Hinglish aur English). Har file ke top pe language switcher hai.
 
+## Website: Agent Lab (browser mein live chalao)
+
+**https://flow6979.github.io/agent-lab/** : is handbook ka asli Python code tumhare browser mein (Pyodide) chalta hai, tumhari LLM key ke saath (Gemini, Groq, OpenAI, Claude). Koi install nahi, koi server nahi. Har step live dikhta hai aur har action ke baad "Kya hua?" card batata hai ki kaunsi file ne kya kiya. Hinglish aur English dono. Code: [flow6979/agent-lab](https://github.com/flow6979/agent-lab); pul: [`lab-api/`](lab-api/README.md).
+
 ## Roadmap
 
 ```
@@ -38,6 +42,7 @@ Repo ka har doc do bhashaon mein hai (Hinglish aur English). Har file ke top pe 
 | Folder | Kya seekhoge |
 |---|---|
 | [`common/`](common/CONCEPTS.md) | `agentkit`: multi-provider LLM layer (adapter pattern), `@tool`, agent loop, retry/fallback, structured output, embeddings, tracing, ScriptedLLM |
+| [`lab-api/`](lab-api/README.md) | Website (Agent Lab) ko handbook se jodta hai: browser-ready HTTP, per-request keys, live events, har project ka lab adapter |
 | [`01-production-agent/`](01-production-agent/README.md) | **support-desk**: guardrails, memory, human approval, rate limit, cost tracking, evals, CLI/API/batch invocation, Docker |
 | [`02-agentic-architectures/`](02-agentic-architectures/README.md) | workflows vs agents, prompt chaining, routing, parallelization, ReAct, plan-and-execute, reflection/Reflexion, evaluator-optimizer, orchestrator-workers, ReWOO, tree-of-thoughts, human-in-the-loop, memory |
 | [`03-web-agents/`](03-web-agents/README.md) | API tools, web search (DuckDuckGo/Tavily), page reader (robots, SSRF guard, injection), deep research agent, browser automation concepts |

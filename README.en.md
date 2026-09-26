@@ -12,6 +12,10 @@ Every project also runs without an API key (`--offline` mode and offline tests),
 
 Every doc in the repo comes in two languages (Hinglish and English). The language switcher is at the top of each file.
 
+## Website: Agent Lab (run it live in your browser)
+
+**https://flow6979.github.io/agent-lab/** : this handbook's real Python code runs inside your browser (Pyodide) with your own LLM key (Gemini, Groq, OpenAI, Claude). Nothing to install, no server. Every step shows up live, and after each action a "What happened?" card explains which file did what. Hinglish and English. Code: [flow6979/agent-lab](https://github.com/flow6979/agent-lab); bridge: [`lab-api/`](lab-api/README.en.md).
+
 ## Roadmap
 
 ```
@@ -38,6 +42,7 @@ Every doc in the repo comes in two languages (Hinglish and English). The languag
 | Folder | What you will learn |
 |---|---|
 | [`common/`](common/CONCEPTS.en.md) | `agentkit`: multi-provider LLM layer (adapter pattern), `@tool`, agent loop, retry/fallback, structured output, embeddings, tracing, ScriptedLLM |
+| [`lab-api/`](lab-api/README.en.md) | Connects the website (Agent Lab) to the handbook: browser-ready HTTP, per-request keys, live events, a lab adapter per project |
 | [`01-production-agent/`](01-production-agent/README.en.md) | **support-desk**: guardrails, memory, human approval, rate limit, cost tracking, evals, CLI/API/batch invocation, Docker |
 | [`02-agentic-architectures/`](02-agentic-architectures/README.en.md) | workflows vs agents, prompt chaining, routing, parallelization, ReAct, plan-and-execute, reflection/Reflexion, evaluator-optimizer, orchestrator-workers, ReWOO, tree-of-thoughts, human-in-the-loop, memory |
 | [`03-web-agents/`](03-web-agents/README.en.md) | API tools, web search (DuckDuckGo/Tavily), page reader (robots, SSRF guard, injection), deep research agent, browser automation concepts |
