@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # MCP Server (stdio): concepts
 
 ## MCP kya hai? Ek line mein

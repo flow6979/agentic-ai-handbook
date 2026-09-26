@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # A2A Server: concepts (Agent2Agent protocol)
 
 ## A2A kya hai?

@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # MCP over HTTP: remote servers, auth, security
 
 ## Local vs Remote MCP server

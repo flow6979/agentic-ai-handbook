@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](TESTING.en.md)
+
 # MCP Server (stdio): test aur tinker kaise karein
 
 ## Setup (repo root se, ek baar)

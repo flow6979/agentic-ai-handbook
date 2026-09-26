@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](README.en.md)
+
 # 07 · MCP (Model Context Protocol): agent ↔ tools/data ka standard
 
 | Folder | Kya seekhoge |

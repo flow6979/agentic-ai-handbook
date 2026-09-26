@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # A2A Client + Orchestrator: concepts
 
 ## Client ke kaam

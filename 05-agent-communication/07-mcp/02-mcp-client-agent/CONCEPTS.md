@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # MCP Client Agent (apna "host" banana): concepts
 
 ## Idea

@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](TESTING.en.md)
+
 # MCP over HTTP: test aur tinker kaise karein
 
 ## Setup

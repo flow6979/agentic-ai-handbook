@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](TESTING.en.md)
+
 # MCP Client Agent: test aur tinker kaise karein
 
 ## Setup

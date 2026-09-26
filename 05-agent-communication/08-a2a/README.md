@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](README.en.md)
+
 # 08 · A2A (Agent2Agent protocol): agent ↔ agent ka standard
 
 | Folder | Kya seekhoge |
