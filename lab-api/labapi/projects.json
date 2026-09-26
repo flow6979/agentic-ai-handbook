@@ -1,0 +1,207 @@
+{
+ "01-production-agent/support-desk": {
+  "main": "01-production-agent/support-desk/main.py",
+  "default_args": [
+   "ask",
+   "Where is my order ORD-1001?"
+  ]
+ },
+ "02-agentic-architectures/00-workflows-vs-agents": {
+  "main": "02-agentic-architectures/00-workflows-vs-agents/main.py"
+ },
+ "02-agentic-architectures/01-prompt-chaining": {
+  "main": "02-agentic-architectures/01-prompt-chaining/main.py"
+ },
+ "02-agentic-architectures/02-routing": {
+  "main": "02-agentic-architectures/02-routing/main.py"
+ },
+ "02-agentic-architectures/03-parallelization": {
+  "main": "02-agentic-architectures/03-parallelization/main.py"
+ },
+ "02-agentic-architectures/04-react": {
+  "main": "02-agentic-architectures/04-react/main.py"
+ },
+ "02-agentic-architectures/05-plan-and-execute": {
+  "main": "02-agentic-architectures/05-plan-and-execute/main.py"
+ },
+ "02-agentic-architectures/06-reflection": {
+  "main": "02-agentic-architectures/06-reflection/main.py",
+  "default_args": [
+   "refine"
+  ]
+ },
+ "02-agentic-architectures/07-evaluator-optimizer": {
+  "main": "02-agentic-architectures/07-evaluator-optimizer/main.py"
+ },
+ "02-agentic-architectures/08-orchestrator-workers": {
+  "main": "02-agentic-architectures/08-orchestrator-workers/main.py"
+ },
+ "02-agentic-architectures/09-rewoo": {
+  "main": "02-agentic-architectures/09-rewoo/main.py"
+ },
+ "02-agentic-architectures/10-tree-of-thoughts": {
+  "main": "02-agentic-architectures/10-tree-of-thoughts/main.py"
+ },
+ "02-agentic-architectures/11-human-in-the-loop": {
+  "main": "02-agentic-architectures/11-human-in-the-loop/main.py"
+ },
+ "02-agentic-architectures/12-memory": {
+  "main": "02-agentic-architectures/12-memory/main.py"
+ },
+ "03-web-agents/01-api-tools": {
+  "main": "03-web-agents/01-api-tools/main.py"
+ },
+ "03-web-agents/02-web-search": {
+  "main": "03-web-agents/02-web-search/main.py"
+ },
+ "03-web-agents/03-web-page-reader": {
+  "main": "03-web-agents/03-web-page-reader/main.py"
+ },
+ "03-web-agents/04-deep-research-agent": {
+  "main": "03-web-agents/04-deep-research-agent/main.py"
+ },
+ "04-rag/01-rag-basics": {
+  "main": "04-rag/01-rag-basics/main.py"
+ },
+ "04-rag/02-pdf-chat": {
+  "main": "04-rag/02-pdf-chat/main.py",
+  "default_args": [
+   "ask"
+  ],
+  "pip": [
+   "pypdf"
+  ]
+ },
+ "04-rag/03-hybrid-search-rerank": {
+  "main": "04-rag/03-hybrid-search-rerank/main.py"
+ },
+ "04-rag/04-vector-store-persistence": {
+  "main": "04-rag/04-vector-store-persistence/main.py",
+  "default_args": [
+   "ingest"
+  ]
+ },
+ "04-rag/05-agentic-rag": {
+  "main": "04-rag/05-agentic-rag/main.py"
+ },
+ "04-rag/06-rag-evaluation": {
+  "main": "04-rag/06-rag-evaluation/main.py"
+ },
+ "05-agent-communication/01-direct-message-passing": {
+  "main": "05-agent-communication/01-direct-message-passing/main.py"
+ },
+ "05-agent-communication/02-agent-as-tool": {
+  "main": "05-agent-communication/02-agent-as-tool/main.py"
+ },
+ "05-agent-communication/03-handoffs": {
+  "main": "05-agent-communication/03-handoffs/main.py"
+ },
+ "05-agent-communication/04-shared-blackboard": {
+  "main": "05-agent-communication/04-shared-blackboard/main.py"
+ },
+ "05-agent-communication/05-event-bus-pubsub": {
+  "main": "05-agent-communication/05-event-bus-pubsub/main.py"
+ },
+ "05-agent-communication/06-http-agent-services": {
+  "main": "05-agent-communication/06-http-agent-services/main.py",
+  "browser": "replay",
+  "replay_reason": {
+   "hi": "Is project ko server / subprocess / background thread chahiye, jo browser mein nahi chal sakte. Isliye yahan iske asli offline run ki recording chalti hai.",
+   "en": "This project needs a server, a subprocess or background threads, which cannot run in a browser. So you see a recording of its real offline run."
+  }
+ },
+ "05-agent-communication/07-mcp/01-mcp-server-stdio": {
+  "main": "05-agent-communication/07-mcp/01-mcp-server-stdio/main.py",
+  "browser": "replay",
+  "replay_reason": {
+   "hi": "Is project ko server / subprocess / background thread chahiye, jo browser mein nahi chal sakte. Isliye yahan iske asli offline run ki recording chalti hai.",
+   "en": "This project needs a server, a subprocess or background threads, which cannot run in a browser. So you see a recording of its real offline run."
+  }
+ },
+ "05-agent-communication/07-mcp/02-mcp-client-agent": {
+  "main": "05-agent-communication/07-mcp/02-mcp-client-agent/main.py",
+  "browser": "replay",
+  "replay_reason": {
+   "hi": "Is project ko server / subprocess / background thread chahiye, jo browser mein nahi chal sakte. Isliye yahan iske asli offline run ki recording chalti hai.",
+   "en": "This project needs a server, a subprocess or background threads, which cannot run in a browser. So you see a recording of its real offline run."
+  }
+ },
+ "05-agent-communication/07-mcp/03-mcp-http-transport": {
+  "main": "05-agent-communication/07-mcp/03-mcp-http-transport/main.py",
+  "browser": "replay",
+  "replay_reason": {
+   "hi": "Is project ko server / subprocess / background thread chahiye, jo browser mein nahi chal sakte. Isliye yahan iske asli offline run ki recording chalti hai.",
+   "en": "This project needs a server, a subprocess or background threads, which cannot run in a browser. So you see a recording of its real offline run."
+  },
+  "default_args": [
+   "--self-host"
+  ]
+ },
+ "05-agent-communication/08-a2a/01-a2a-server": {
+  "main": "05-agent-communication/08-a2a/01-a2a-server/main.py",
+  "browser": "replay",
+  "replay_reason": {
+   "hi": "Is project ko server / subprocess / background thread chahiye, jo browser mein nahi chal sakte. Isliye yahan iske asli offline run ki recording chalti hai.",
+   "en": "This project needs a server, a subprocess or background threads, which cannot run in a browser. So you see a recording of its real offline run."
+  },
+  "record": {
+   "background": [
+    "main.py",
+    "--offline",
+    "--port",
+    "9101"
+   ],
+   "wait_s": 3,
+   "foreground": [
+    "-c",
+    "import httpx, json\nbase='http://127.0.0.1:9101'\ncard=httpx.get(base+'/.well-known/agent.json').json()\nprint('GET /.well-known/agent.json ->', card['name'], '| skills:', [s['id'] for s in card.get('skills', [])])\nbody={'jsonrpc':'2.0','id':1,'method':'message/send','params':{'message':{'role':'user','messageId':'m1','parts':[{'kind':'text','text':'convert 100 USD to INR'}]}}}\nr=httpx.post(base+'/', json=body, timeout=30).json()\ntask=r.get('result', {})\nprint('message/send -> task', task.get('id'), 'state =', task.get('status', {}).get('state'))\nprint(json.dumps(r, indent=1)[:1500])\n"
+   ],
+   "label": "Terminal 1: python main.py --offline --port 9101   |   Terminal 2: A2A client -> GET /.well-known/agent.json, then message/send"
+  }
+ },
+ "05-agent-communication/08-a2a/02-a2a-client-orchestrator": {
+  "main": "05-agent-communication/08-a2a/02-a2a-client-orchestrator/main.py",
+  "browser": "replay",
+  "replay_reason": {
+   "hi": "Is project ko server / subprocess / background thread chahiye, jo browser mein nahi chal sakte. Isliye yahan iske asli offline run ki recording chalti hai.",
+   "en": "This project needs a server, a subprocess or background threads, which cannot run in a browser. So you see a recording of its real offline run."
+  }
+ },
+ "05-agent-communication/08-a2a/03-multi-vendor-demo": {
+  "main": "05-agent-communication/08-a2a/03-multi-vendor-demo/main.py",
+  "browser": "replay",
+  "replay_reason": {
+   "hi": "Is project ko server / subprocess / background thread chahiye, jo browser mein nahi chal sakte. Isliye yahan iske asli offline run ki recording chalti hai.",
+   "en": "This project needs a server, a subprocess or background threads, which cannot run in a browser. So you see a recording of its real offline run."
+  }
+ },
+ "06-multi-agent-systems/01-role-design-basics": {
+  "main": "06-multi-agent-systems/01-role-design-basics/main.py"
+ },
+ "06-multi-agent-systems/02-sequential-crew": {
+  "main": "06-multi-agent-systems/02-sequential-crew/main.py"
+ },
+ "06-multi-agent-systems/03-supervisor-team": {
+  "main": "06-multi-agent-systems/03-supervisor-team/main.py"
+ },
+ "06-multi-agent-systems/04-hierarchical-teams": {
+  "main": "06-multi-agent-systems/04-hierarchical-teams/main.py"
+ },
+ "06-multi-agent-systems/05-group-chat": {
+  "main": "06-multi-agent-systems/05-group-chat/main.py"
+ },
+ "06-multi-agent-systems/06-debate-and-judge": {
+  "main": "06-multi-agent-systems/06-debate-and-judge/main.py",
+  "default_args": [
+   "debate",
+   "Should a startup use microservices from day one?"
+  ]
+ },
+ "06-multi-agent-systems/07-swarm-handoffs": {
+  "main": "06-multi-agent-systems/07-swarm-handoffs/main.py",
+  "default_args": [
+   "--once",
+   "My order A100 never arrived, I want a refund"
+  ]
+ }
+}
