@@ -249,4 +249,5 @@ def run(ctx: LabContext) -> dict:
             "ms": round((time.perf_counter() - t0) * 1000), **stats}
 
 
-LAB = Lab(id="project", project="*", run=run)
+LAB = Lab(id="project", project="*", run=run,
+          smoke_cases=[{"project": "02-agentic-architectures/01-prompt-chaining"}, {"project": "05-agent-communication/07-mcp/01-mcp-server-stdio"}])
