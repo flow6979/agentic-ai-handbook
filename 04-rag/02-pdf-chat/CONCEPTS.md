@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # PDF Chat: concepts (Hinglish)
 
 Project 01 mein humne plain markdown pe RAG kiya. Real duniya mein user **PDF upload** karta hai

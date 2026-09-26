@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # Hybrid Search + Reranking: concepts (Hinglish)
 
 Project 01 ka retrieval sirf **vector search** tha. Production RAG mein yeh akela kaafi nahi hota.

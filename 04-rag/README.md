@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](README.en.md)
+
 # 04 · RAG: agent ko user ka data (text, PDFs, docs) kaise dein
 
 LLM ko tumhari company ki policy, tumhari PDF, tumhare notes nahi pata. Is section mein seekhoge ki agent

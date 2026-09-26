@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # RAG Evaluation: concepts (Hinglish)
 
 ## Eval kyun?

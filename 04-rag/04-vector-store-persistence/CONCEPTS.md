@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # Vector Store Persistence + Incremental Ingestion: concepts (Hinglish)
 
 Project 01 ka vector store **RAM mein** tha: program band hua to sab gaya, aur har start pe saare docs

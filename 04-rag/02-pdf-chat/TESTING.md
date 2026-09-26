@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](TESTING.en.md)
+
 # PDF Chat: kaise chalayein, test karein, tinker karein
 
 Setup (repo root se): `source .venv/bin/activate && pip install -e ".[all]"`, `.env` mein LLM set karo.

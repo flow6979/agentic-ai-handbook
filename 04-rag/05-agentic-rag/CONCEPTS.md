@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # Agentic RAG: concepts (Hinglish)
 
 ## Naive RAG ki problem

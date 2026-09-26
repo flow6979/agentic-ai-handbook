@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # RAG Basics: concepts (Hinglish)
 
 ## Problem kya hai?

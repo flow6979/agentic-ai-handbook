@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](TESTING.en.md)
+
 # RAG Basics: kaise chalayein, test karein, tinker karein
 
 ## Setup (repo root se, ek baar)

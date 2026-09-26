@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](TESTING.en.md)
+
 # Vector Store Persistence: kaise chalayein, test karein, tinker karein
 
 Setup: repo root se `source .venv/bin/activate && pip install -e ".[all]"`.

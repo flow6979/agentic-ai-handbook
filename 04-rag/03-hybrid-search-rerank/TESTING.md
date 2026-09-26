@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](TESTING.en.md)
+
 # Hybrid Search + Rerank: kaise chalayein, test karein, tinker karein
 
 Setup: repo root se `source .venv/bin/activate && pip install -e ".[all]"`.
