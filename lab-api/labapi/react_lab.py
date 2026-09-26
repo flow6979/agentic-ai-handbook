@@ -118,4 +118,5 @@ def run(ctx: LabContext) -> dict:
 
 
 LAB = Lab(id="react", project=PROJECT, run=run,
-          defaults={"mode": "text", "question": DEFAULT_Q, "max_steps": 8})
+          defaults={"mode": "text", "question": DEFAULT_Q, "max_steps": 8},
+          smoke_cases=[{"mode": "text"}, {"mode": "native"}, {"mode": "native", "max_steps": 1}])

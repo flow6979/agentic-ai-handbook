@@ -29,6 +29,8 @@ class Lab:
     run: Callable[[LabContext], dict[str, Any]]
     live: bool = True  # False = sirf recorded replay (e.g. MCP/A2A servers browser mein nahi chal sakte)
     defaults: dict[str, Any] = field(default_factory=dict)
+    pip: list[str] = field(default_factory=list)  # browser mein micropip se install hone wale packages (e.g. pypdf)
+    smoke_cases: list[dict[str, Any]] = field(default_factory=lambda: [{}])  # CI: har case offline chalta hai
 
 
 _LABS: dict[str, Lab] = {}
@@ -53,7 +55,8 @@ def labs() -> dict[str, Lab]:
 
 
 def catalog() -> list[dict[str, Any]]:
-    return [{"id": l.id, "project": l.project, "live": l.live, "defaults": l.defaults} for l in labs().values()]
+    return [{"id": l.id, "project": l.project, "live": l.live, "defaults": l.defaults, "pip": l.pip,
+             "smoke_cases": l.smoke_cases} for l in labs().values()]
 
 
 def classify_error(e: BaseException) -> dict[str, Any]:
