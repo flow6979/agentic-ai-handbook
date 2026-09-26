@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # 06 · Agents as HTTP Microservices
 
 ## Basic idea

@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # 04 · Shared Blackboard (Shared state pe collaboration)
 
 ## Basic idea

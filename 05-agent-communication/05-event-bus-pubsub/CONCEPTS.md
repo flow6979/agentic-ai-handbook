@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # 05 · Event Bus / Pub-Sub (Async, decoupled agents)
 
 ## Basic idea

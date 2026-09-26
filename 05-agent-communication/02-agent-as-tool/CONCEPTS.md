@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # 02 · Agent-as-Tool (Agent ko function bana do)
 
 ## Basic idea

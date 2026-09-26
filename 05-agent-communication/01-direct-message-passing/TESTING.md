@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](TESTING.en.md)
+
 # 01 · Direct Message Passing: Test aur tinker kaise karein
 
 ## Setup (ek baar, repo root se)

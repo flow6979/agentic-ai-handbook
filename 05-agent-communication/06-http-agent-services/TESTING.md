@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](TESTING.en.md)
+
 # 06 · HTTP Agent Services: Test aur tinker kaise karein
 
 ## Offline (koi port nahi, sab in-process TestClient se)

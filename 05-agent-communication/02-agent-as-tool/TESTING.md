@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](TESTING.en.md)
+
 # 02 · Agent-as-Tool: Test aur tinker kaise karein
 
 ## Offline run

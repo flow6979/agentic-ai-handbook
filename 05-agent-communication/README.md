@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](README.en.md)
+
 # 05 · Agent Communication: agents aapas mein (aur tools se) baat kaise karte hain
 
 Ek agent akela limited hota hai. Jaise hi 2+ agents (ya agent + external tools) aate hain, sawaal
