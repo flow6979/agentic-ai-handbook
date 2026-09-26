@@ -22,10 +22,10 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-where = ["common"]
-include = ["agentkit*"]
+where = ["common", "lab-api"]
+include = ["agentkit*", "labapi*"]
 
 [tool.pytest.ini_options]
 addopts = "-q"
-testpaths = ["common/tests", "01-production-agent", "02-agentic-architectures", "03-web-agents", "04-rag", "05-agent-communication", "06-multi-agent-systems"]
+testpaths = ["common/tests", "lab-api", "01-production-agent", "02-agentic-architectures", "03-web-agents", "04-rag", "05-agent-communication", "06-multi-agent-systems"]
 norecursedirs = [".venv", ".git", "__pycache__"]
