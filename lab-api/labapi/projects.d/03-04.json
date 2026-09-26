@@ -1,0 +1,996 @@
+{
+ "03-web-agents/01-api-tools": {
+  "inputs": [
+   {
+    "name": "question",
+    "kind": "textarea",
+    "default": "I'm visiting Paris for 3 days with 500 USD. What's the weather looking like, how many EUR is that, and give me one fact about the Eiffel Tower.",
+    "label": {
+     "hi": "Travel sawaal",
+     "en": "Travel question"
+    },
+    "help": {
+     "hi": "Weather, currency aur ek fact: teen APIs ek saath",
+     "en": "Weather, currency and a fact: three APIs at once"
+    }
+   }
+  ],
+  "summary": {
+   "hi": "Travel helper agent jo public APIs (weather, currency, Wikipedia) ko tools ki tarah chalata hai, timeout, retry aur cache ke saath.",
+   "en": "A travel helper agent that uses public APIs (weather, currency, Wikipedia) as tools, with timeouts, retries and caching."
+  },
+  "watch": {
+   "hi": [
+    "Ek hi step mein kai tool calls (parallel tool use)",
+    "Har tool ka chhota (trimmed) JSON result",
+    "Final answer ke end mein 'Sources:' line"
+   ],
+   "en": [
+    "Several tool calls in a single step (parallel tool use)",
+    "Each tool's short, trimmed JSON result",
+    "The 'Sources:' line at the end of the answer"
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "Agent ne teen APIs tools ki tarah chalayi",
+    "flow": [
+     "question",
+     "Agent",
+     "weather / currency / wikipedia tools",
+     "answer + sources"
+    ],
+    "lines": [
+     "apitools_tools.py mein har public API ek @tool hai; LLM ne schema dekh ke sahi tool chune.",
+     "apitools_http.py har call pe timeout, retry aur TTL cache lagata hai, aur response ko trim karta hai taaki context na bhare.",
+     "Offline mode mein apitools_fixtures.py nakli API responses deta hai."
+    ]
+   },
+   "en": {
+    "title": "The agent used three APIs as tools",
+    "flow": [
+     "question",
+     "Agent",
+     "weather / currency / wikipedia tools",
+     "answer + sources"
+    ],
+    "lines": [
+     "In apitools_tools.py each public API is a @tool; the LLM picked tools from their schemas.",
+     "apitools_http.py adds timeout, retry and a TTL cache to every call, and trims responses so the context stays small.",
+     "In offline mode apitools_fixtures.py serves fake API responses."
+    ]
+   }
+  },
+  "files": [
+   "03-web-agents/01-api-tools/apitools_tools.py",
+   "03-web-agents/01-api-tools/apitools_http.py",
+   "03-web-agents/01-api-tools/main.py"
+  ],
+  "live_note": {
+   "hi": "Browser ke live mode mein open-meteo (weather) aur Wikipedia chalte hain (CORS allowed). Currency API CORS allow na kare to woh tool error dega; agent use batayega. Poora result chahiye to Offline mode ya CLI locally.",
+   "en": "In the browser's live mode open-meteo (weather) and Wikipedia work (CORS allowed). If the currency API does not allow CORS, that tool returns an error and the agent reports it. For the full result use Offline mode or run the CLI locally."
+  }
+ },
+ "03-web-agents/02-web-search": {
+  "inputs": [
+   {
+    "name": "question",
+    "kind": "textarea",
+    "default": "What are the headline features of Python 3.13?",
+    "label": {
+     "hi": "Sawaal",
+     "en": "Question"
+    },
+    "help": {
+     "hi": "Agent web search karke citations ke saath jawab dega",
+     "en": "The agent searches the web and answers with citations"
+    }
+   }
+  ],
+  "summary": {
+   "hi": "Web search tool (DuckDuckGo ya Tavily) wala agent jo results normalise karke citations ke saath jawab deta hai.",
+   "en": "An agent with a web search tool (DuckDuckGo or Tavily) that normalises results and answers with citations."
+  },
+  "watch": {
+   "hi": [
+    "search tool call aur uske title/url/snippet results",
+    "Jawab mein [1], [2] jaise citations",
+    "Citation check: har URL results mein hai ya nahi"
+   ],
+   "en": [
+    "The search tool call and its title/url/snippet results",
+    "Citations like [1], [2] in the answer",
+    "The citation check: whether each URL came from the results"
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "Search karke cited jawab bana",
+    "flow": [
+     "question",
+     "web_search tool",
+     "normalised results",
+     "cited answer"
+    ],
+    "lines": [
+     "websearch_providers.py DuckDuckGo HTML ko parse karta hai (ya Tavily API) aur results ko ek format (title, url, snippet) mein laata hai.",
+     "websearch_tools.py search ko @tool banata hai aur answer ke citations verify karta hai.",
+     "Offline mode mein websearch_fixtures.py canned results deta hai."
+    ]
+   },
+   "en": {
+    "title": "Searched and built a cited answer",
+    "flow": [
+     "question",
+     "web_search tool",
+     "normalised results",
+     "cited answer"
+    ],
+    "lines": [
+     "websearch_providers.py parses DuckDuckGo HTML (or the Tavily API) and normalises results to title, url, snippet.",
+     "websearch_tools.py wraps search as a @tool and verifies the answer's citations.",
+     "In offline mode websearch_fixtures.py serves canned results."
+    ]
+   }
+  },
+  "files": [
+   "03-web-agents/02-web-search/websearch_providers.py",
+   "03-web-agents/02-web-search/websearch_tools.py",
+   "03-web-agents/02-web-search/main.py"
+  ],
+  "live_note": {
+   "hi": "Browser ke live mode mein DuckDuckGo search CORS ki wajah se block ho jaati hai. Yahan Offline mode chalao, ya dedicated Web lab (Wikipedia/Tavily) try karo, ya CLI locally chalao.",
+   "en": "In the browser's live mode DuckDuckGo search is blocked by CORS. Use Offline mode here, try the dedicated Web lab (Wikipedia/Tavily), or run the CLI locally."
+  }
+ },
+ "03-web-agents/03-web-page-reader": {
+  "inputs": [
+   {
+    "name": "question",
+    "kind": "textarea",
+    "default": "How do honeybees tell each other where flowers are? Use https://encyclopedia.example/wiki/honeybee",
+    "label": {
+     "hi": "Sawaal (URL ke saath)",
+     "en": "Question (with a URL)"
+    },
+    "help": {
+     "hi": "Agent URL fetch karke padhega",
+     "en": "The agent fetches and reads the URL"
+    }
+   },
+   {
+    "name": "raw",
+    "kind": "text",
+    "arg": "--raw",
+    "default": "",
+    "label": {
+     "hi": "Sirf URL fetch karo (--raw)",
+     "en": "Just fetch a URL (--raw)"
+    },
+    "help": {
+     "hi": "Bharoge to LLM ke bina page ka extracted text dikhega. Offline mein https://encyclopedia.example/wiki/honeybee try karo",
+     "en": "If set, prints the page's extracted text without the LLM. Offline, try https://encyclopedia.example/wiki/honeybee"
+    }
+   }
+  ],
+  "summary": {
+   "hi": "URL fetch karke main text nikaalne wala reader agent: robots.txt, SSRF guard, size limit aur prompt-injection se bachav.",
+   "en": "A reader agent that fetches a URL and extracts the main text: robots.txt, SSRF guard, size limit and prompt-injection defence."
+  },
+  "watch": {
+   "hi": [
+    "read_page tool call aur fetch ka result",
+    "Page text <untrusted> tags mein wrapped (data, instructions nahi)",
+    "Injection jaisi lines ka flag"
+   ],
+   "en": [
+    "The read_page tool call and the fetch result",
+    "Page text wrapped in untrusted tags (data, not instructions)",
+    "Flags on injection-looking lines"
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "Page padha, safely",
+    "flow": [
+     "URL",
+     "SSRF + robots check",
+     "extract main text",
+     "relevant chunks",
+     "answer"
+    ],
+    "lines": [
+     "pagereader_fetch.py private IPs block karta hai (SSRF), robots.txt maanta hai aur har redirect check karta hai.",
+     "pagereader_extract.py nav/script hata ke main text nikaalta hai; pagereader_chunks.py sawaal se milte chunks chunta hai.",
+     "pagereader_tools.py text ko untrusted wrapper mein daalta hai taaki page ki instructions agent na maane."
+    ]
+   },
+   "en": {
+    "title": "Read the page, safely",
+    "flow": [
+     "URL",
+     "SSRF + robots check",
+     "extract main text",
+     "relevant chunks",
+     "answer"
+    ],
+    "lines": [
+     "pagereader_fetch.py blocks private IPs (SSRF), respects robots.txt and checks every redirect.",
+     "pagereader_extract.py strips nav/scripts to get the main text; pagereader_chunks.py picks chunks that match the question.",
+     "pagereader_tools.py wraps the text as untrusted so the agent does not follow instructions from the page."
+    ]
+   }
+  },
+  "files": [
+   "03-web-agents/03-web-page-reader/pagereader_fetch.py",
+   "03-web-agents/03-web-page-reader/pagereader_extract.py",
+   "03-web-agents/03-web-page-reader/pagereader_tools.py"
+  ],
+  "live_note": {
+   "hi": "Browser ke live mode mein zyada tar websites ki fetch (aur robots.txt) CORS ki wajah se block ho jaati hai. Yahan Offline mode chalao, ya dedicated Web lab (Wikipedia/Tavily) try karo, ya CLI locally chalao.",
+   "en": "In the browser's live mode fetching most websites (and their robots.txt) is blocked by CORS. Use Offline mode here, try the dedicated Web lab (Wikipedia/Tavily), or run the CLI locally."
+  }
+ },
+ "03-web-agents/04-deep-research-agent": {
+  "inputs": [
+   {
+    "name": "topic",
+    "kind": "textarea",
+    "default": "Solar power: cost trends, growth and main challenges",
+    "label": {
+     "hi": "Research topic",
+     "en": "Research topic"
+    },
+    "help": {
+     "hi": "Agent plan banayega, search karega, padhega aur cited report likhega",
+     "en": "The agent plans, searches, reads and writes a cited report"
+    }
+   },
+   {
+    "name": "max_searches",
+    "kind": "number",
+    "arg": "--max-searches",
+    "default": 6,
+    "label": {
+     "hi": "Max searches",
+     "en": "Max searches"
+    },
+    "help": {
+     "hi": "Budget: kitni searches",
+     "en": "Budget: number of searches"
+    }
+   },
+   {
+    "name": "max_pages",
+    "kind": "number",
+    "arg": "--max-pages",
+    "default": 8,
+    "label": {
+     "hi": "Max pages",
+     "en": "Max pages"
+    },
+    "help": {
+     "hi": "Budget: kitne pages padhe",
+     "en": "Budget: number of pages read"
+    }
+   },
+   {
+    "name": "rounds",
+    "kind": "number",
+    "arg": "--rounds",
+    "default": 2,
+    "label": {
+     "hi": "Rounds",
+     "en": "Rounds"
+    },
+    "help": {
+     "hi": "Coverage check ke baad kitni baar dobara",
+     "en": "How many research rounds after coverage checks"
+    }
+   }
+  ],
+  "summary": {
+   "hi": "Multi-step research agent: sub-questions -> search -> pages padho -> notes -> coverage check -> cited markdown report, budget ke andar.",
+   "en": "A multi-step research agent: sub-questions, search, read pages, notes, coverage check, and a cited markdown report within a budget."
+  },
+  "watch": {
+   "hi": [
+    "Plan ke sub-questions",
+    "Searches aur pages ka budget counter",
+    "Notes har ek source URL ke saath",
+    "End mein numbered sources wali report"
+   ],
+   "en": [
+    "The plan's sub-questions",
+    "Budget counters for searches and pages",
+    "Notes, each with its source URL",
+    "The final report with numbered sources"
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "Research loop poora hua",
+    "flow": [
+     "plan",
+     "search",
+     "read",
+     "notes",
+     "coverage check",
+     "report"
+    ],
+    "lines": [
+     "deepresearch_agent.py pehle sawaal ko sub-questions mein todta hai, phir har ek ke liye search aur read karta hai.",
+     "Har note apne source URL ke saath save hota hai; citations code lagata hai, LLM nahi, isliye fake source nahi aa sakta.",
+     "Budget (max searches/pages) khatam ya coverage poora hone pe loop rukta hai."
+    ]
+   },
+   "en": {
+    "title": "The research loop finished",
+    "flow": [
+     "plan",
+     "search",
+     "read",
+     "notes",
+     "coverage check",
+     "report"
+    ],
+    "lines": [
+     "deepresearch_agent.py splits the question into sub-questions, then searches and reads for each one.",
+     "Every note is stored with its source URL; the code adds citations, not the LLM, so sources cannot be invented.",
+     "The loop stops when the budget (max searches/pages) runs out or coverage is complete."
+    ]
+   }
+  },
+  "files": [
+   "03-web-agents/04-deep-research-agent/deepresearch_agent.py",
+   "03-web-agents/04-deep-research-agent/main.py"
+  ],
+  "live_note": {
+   "hi": "Browser ke live mode mein DuckDuckGo search aur arbitrary page fetch CORS ki wajah se block ho jaati hai. Yahan Offline mode chalao, ya dedicated Web lab (Wikipedia/Tavily) try karo, ya CLI locally chalao.",
+   "en": "In the browser's live mode DuckDuckGo search and arbitrary page fetching is blocked by CORS. Use Offline mode here, try the dedicated Web lab (Wikipedia/Tavily), or run the CLI locally."
+  }
+ },
+ "04-rag/01-rag-basics": {
+  "inputs": [
+   {
+    "name": "question",
+    "kind": "textarea",
+    "default": "How long do card refunds take?",
+    "label": {
+     "hi": "Sawaal",
+     "en": "Question"
+    },
+    "help": {
+     "hi": "Company docs se jawab",
+     "en": "Answered from the company docs"
+    }
+   },
+   {
+    "name": "strategy",
+    "kind": "choice",
+    "arg": "--strategy",
+    "default": "recursive",
+    "choices": [
+     "fixed",
+     "recursive",
+     "sentence"
+    ],
+    "label": {
+     "hi": "Chunking strategy",
+     "en": "Chunking strategy"
+    },
+    "help": {
+     "hi": "Text ko tukdon mein kaise kaatein",
+     "en": "How the text is split into chunks"
+    }
+   },
+   {
+    "name": "size",
+    "kind": "number",
+    "arg": "--size",
+    "default": 400,
+    "label": {
+     "hi": "Chunk size",
+     "en": "Chunk size"
+    },
+    "help": {
+     "hi": "Characters per chunk",
+     "en": "Characters per chunk"
+    }
+   },
+   {
+    "name": "k",
+    "kind": "number",
+    "arg": "-k",
+    "default": 4,
+    "label": {
+     "hi": "Top-k",
+     "en": "Top-k"
+    },
+    "help": {
+     "hi": "Kitne chunks retrieve karein",
+     "en": "How many chunks to retrieve"
+    }
+   },
+   {
+    "name": "show_chunks",
+    "kind": "flag",
+    "arg": "--show-chunks",
+    "default": true,
+    "label": {
+     "hi": "Retrieved chunks dikhao",
+     "en": "Show retrieved chunks"
+    },
+    "help": {
+     "hi": "Scores ke saath",
+     "en": "With scores"
+    }
+   },
+   {
+    "name": "compare_chunkers",
+    "kind": "flag",
+    "arg": "--compare-chunkers",
+    "default": false,
+    "label": {
+     "hi": "Chunkers compare karo",
+     "en": "Compare chunkers"
+    },
+    "help": {
+     "hi": "Teeno strategies ka side-by-side",
+     "en": "Side-by-side of all three strategies"
+    }
+   }
+  ],
+  "summary": {
+   "hi": "Poori RAG pipeline haath se: load, chunk, embed, top-k retrieve, context ke saath answer aur [source] citations.",
+   "en": "The full RAG pipeline by hand: load, chunk, embed, top-k retrieve, answer with context and [source] citations."
+  },
+  "watch": {
+   "hi": [
+    "Retrieved chunks aur unke cosine scores",
+    "Jawab mein [source] citations",
+    "Context mein jawab na ho to 'I don't know'"
+   ],
+   "en": [
+    "The retrieved chunks and their cosine scores",
+    "The [source] citations in the answer",
+    "'I don't know' when the context lacks the answer"
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "RAG pipeline chali",
+    "flow": [
+     "docs",
+     "chunk",
+     "embed",
+     "top-k",
+     "LLM + context",
+     "cited answer"
+    ],
+    "lines": [
+     "ragbasics_pipeline.py docs ko chunk karta hai (fixed / recursive / sentence) aur har chunk ka embedding banata hai.",
+     "Sawaal ka embedding sabse milte top-k chunks cosine se dhoondhta hai; wahi prompt mein context bante hain.",
+     "Score kam ho to LLM ko call hi nahi hota, seedha 'I don't know'."
+    ]
+   },
+   "en": {
+    "title": "The RAG pipeline ran",
+    "flow": [
+     "docs",
+     "chunk",
+     "embed",
+     "top-k",
+     "LLM + context",
+     "cited answer"
+    ],
+    "lines": [
+     "ragbasics_pipeline.py chunks the docs (fixed / recursive / sentence) and embeds every chunk.",
+     "The question's embedding finds the closest top-k chunks by cosine; those become the prompt's context.",
+     "If scores are too low the LLM is not called at all, and the answer is 'I don't know'."
+    ]
+   }
+  },
+  "files": [
+   "04-rag/01-rag-basics/ragbasics_pipeline.py",
+   "04-rag/01-rag-basics/main.py"
+  ]
+ },
+ "04-rag/02-pdf-chat": {
+  "prefix": [
+   "ask",
+   "data/nimbuskart_handbook.pdf"
+  ],
+  "inputs": [
+   {
+    "name": "question",
+    "kind": "textarea",
+    "default": "How many paid leave days do I get?",
+    "label": {
+     "hi": "PDF se sawaal",
+     "en": "Question about the PDF"
+    },
+    "help": {
+     "hi": "Sample: nimbuskart_handbook.pdf (4 pages)",
+     "en": "Sample: nimbuskart_handbook.pdf (4 pages)"
+    }
+   },
+   {
+    "name": "verbose",
+    "kind": "flag",
+    "arg": "-v",
+    "default": true,
+    "label": {
+     "hi": "Retrieved chunks dikhao",
+     "en": "Show retrieved chunks"
+    },
+    "help": {
+     "hi": "Page numbers ke saath",
+     "en": "With page numbers"
+    }
+   }
+  ],
+  "summary": {
+   "hi": "PDF chat: pypdf se pages padho, page-aware chunks, aur [p.N] page citations ke saath jawab.",
+   "en": "PDF chat: read pages with pypdf, page-aware chunks, and answers with [p.N] page citations."
+  },
+  "watch": {
+   "hi": [
+    "Retrieved chunks ke page numbers",
+    "Jawab mein [p.N] citations",
+    "Scanned PDF ho to text nahi milne ki warning"
+   ],
+   "en": [
+    "Page numbers of the retrieved chunks",
+    "The [p.N] citations in the answer",
+    "A warning when a PDF is scanned and has no text"
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "PDF se page-cited jawab",
+    "flow": [
+     "PDF",
+     "pypdf pages",
+     "page-aware chunks",
+     "retrieve",
+     "answer [p.N]"
+    ],
+    "lines": [
+     "pdfchat_core.py pypdf se har page ka text nikaalta hai aur chunks pe page number yaad rakhta hai.",
+     "Retrieve ke baad LLM ko chunks page tags ke saath milte hain, isliye jawab [p.3] jaisa cite karta hai.",
+     "Chat mode (follow-up sawaal) ke liye CLI chalao; yahan sirf 'ask' mode hai."
+    ]
+   },
+   "en": {
+    "title": "A page-cited answer from the PDF",
+    "flow": [
+     "PDF",
+     "pypdf pages",
+     "page-aware chunks",
+     "retrieve",
+     "answer [p.N]"
+    ],
+    "lines": [
+     "pdfchat_core.py extracts each page's text with pypdf and keeps the page number on every chunk.",
+     "After retrieval the LLM sees chunks with page tags, so the answer cites like [p.3].",
+     "Chat mode (follow-up questions) needs the CLI; only 'ask' mode is here."
+    ]
+   }
+  },
+  "files": [
+   "04-rag/02-pdf-chat/pdfchat_core.py",
+   "04-rag/02-pdf-chat/main.py"
+  ]
+ },
+ "04-rag/03-hybrid-search-rerank": {
+  "inputs": [
+   {
+    "name": "query",
+    "kind": "text",
+    "default": "NK-4471 battery life",
+    "label": {
+     "hi": "Query",
+     "en": "Query"
+    },
+    "help": {
+     "hi": "Product codes pe BM25 aur meaning pe vector search",
+     "en": "BM25 wins on product codes, vectors on meaning"
+    }
+   },
+   {
+    "name": "k",
+    "kind": "number",
+    "arg": "-k",
+    "default": 4,
+    "label": {
+     "hi": "Top-k",
+     "en": "Top-k"
+    },
+    "help": {
+     "hi": "Kitne results",
+     "en": "How many results"
+    }
+   },
+   {
+    "name": "category",
+    "kind": "choice",
+    "arg": "--category",
+    "default": "",
+    "choices": [
+     "",
+     "policy",
+     "product",
+     "troubleshooting",
+     "blog"
+    ],
+    "label": {
+     "hi": "Category filter",
+     "en": "Category filter"
+    },
+    "help": {
+     "hi": "Metadata pre-filter (khaali = koi filter nahi)",
+     "en": "Metadata pre-filter (empty = none)"
+    }
+   },
+   {
+    "name": "min_year",
+    "kind": "number",
+    "arg": "--min-year",
+    "default": null,
+    "label": {
+     "hi": "Min year",
+     "en": "Min year"
+    },
+    "help": {
+     "hi": "Isse purane docs hatao",
+     "en": "Drop docs older than this"
+    }
+   },
+   {
+    "name": "rerank",
+    "kind": "flag",
+    "arg": "--rerank",
+    "default": false,
+    "label": {
+     "hi": "LLM rerank",
+     "en": "LLM rerank"
+    },
+    "help": {
+     "hi": "Hybrid results ko LLM se dobara rank karo",
+     "en": "Re-rank the hybrid results with the LLM"
+    }
+   }
+  ],
+  "summary": {
+   "hi": "Hybrid search: BM25 (keywords) + vector (meaning), Reciprocal Rank Fusion, metadata filters aur optional LLM rerank.",
+   "en": "Hybrid search: BM25 (keywords) plus vectors (meaning), Reciprocal Rank Fusion, metadata filters and optional LLM reranking."
+  },
+  "watch": {
+   "hi": [
+    "BM25, vector aur fused rankings side by side",
+    "Filter lagane pe results kaise badalte hain",
+    "--rerank pe LLM ka naya order"
+   ],
+   "en": [
+    "BM25, vector and fused rankings side by side",
+    "How results change when a filter is applied",
+    "The LLM's new order with --rerank"
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "Do search jodke behtar ranking",
+    "flow": [
+     "query",
+     "BM25 + vector",
+     "RRF fusion",
+     "filter",
+     "rerank?"
+    ],
+    "lines": [
+     "hybrid_search.py mein BM25 scratch se likha hai; exact words (jaise NK-4471) pe yeh jeetta hai.",
+     "Vector search meaning pakadta hai; Reciprocal Rank Fusion dono ki rankings jodta hai.",
+     "Rerank mein LLM listwise order deta hai; indices validate hote hain taaki galat id na aaye."
+    ]
+   },
+   "en": {
+    "title": "Two searches combined into a better ranking",
+    "flow": [
+     "query",
+     "BM25 + vector",
+     "RRF fusion",
+     "filter",
+     "rerank?"
+    ],
+    "lines": [
+     "hybrid_search.py implements BM25 from scratch; it wins on exact words like NK-4471.",
+     "Vector search captures meaning; Reciprocal Rank Fusion merges both rankings.",
+     "With rerank the LLM returns a listwise order; indices are validated so no bad ids slip in."
+    ]
+   }
+  },
+  "files": [
+   "04-rag/03-hybrid-search-rerank/hybrid_search.py",
+   "04-rag/03-hybrid-search-rerank/main.py"
+  ]
+ },
+ "04-rag/04-vector-store-persistence": {
+  "inputs": [
+   {
+    "name": "cmd",
+    "kind": "choice",
+    "default": "ingest",
+    "choices": [
+     "ingest",
+     "search",
+     "ask",
+     "stats"
+    ],
+    "label": {
+     "hi": "Command",
+     "en": "Command"
+    },
+    "help": {
+     "hi": "Pehle 'ingest' chalao; search/ask/stats usi session ki rag.sqlite3 pe chalte hain (page reload tak file rehti hai)",
+     "en": "Run 'ingest' first; search/ask/stats use this session's rag.sqlite3 (the file stays until you reload the page)"
+    }
+   },
+   {
+    "name": "text",
+    "kind": "text",
+    "default": "How long do refunds take?",
+    "label": {
+     "hi": "Query (search/ask ke liye)",
+     "en": "Query (for search/ask)"
+    },
+    "help": {
+     "hi": "ingest/stats isse ignore karte hain",
+     "en": "ingest/stats ignore it"
+    }
+   },
+   {
+    "name": "k",
+    "kind": "number",
+    "arg": "-k",
+    "default": 3,
+    "label": {
+     "hi": "Top-k",
+     "en": "Top-k"
+    },
+    "help": {
+     "hi": "Kitne results",
+     "en": "How many results"
+    }
+   }
+  ],
+  "summary": {
+   "hi": "SQLite vector store: embeddings disk pe, content hashing se incremental ingest (unchanged skip, removed delete), phir search/ask.",
+   "en": "A SQLite vector store: embeddings on disk, incremental ingest with content hashing (skip unchanged, delete removed), then search/ask."
+  },
+  "watch": {
+   "hi": [
+    "ingest ka summary: added / updated / skipped / deleted",
+    "Dobara ingest pe sab 'skipped' (hash same)",
+    "search ke results scores ke saath"
+   ],
+   "en": [
+    "The ingest summary: added / updated / skipped / deleted",
+    "A second ingest skips everything (same hashes)",
+    "Search results with scores"
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "Vectors disk pe save hue",
+    "flow": [
+     "docs",
+     "hash check",
+     "embed changed",
+     "SQLite BLOBs",
+     "search"
+    ],
+    "lines": [
+     "vstore_sqlite.py har doc ka content hash rakhta hai; sirf badle hue docs dobara embed hote hain.",
+     "Vectors float32 BLOB ban ke SQLite mein jaate hain; search brute-force cosine hai.",
+     "Alag embedder ke saath mix karne se mana karta hai, taaki vectors compare-able rahein."
+    ]
+   },
+   "en": {
+    "title": "Vectors saved to disk",
+    "flow": [
+     "docs",
+     "hash check",
+     "embed changed",
+     "SQLite BLOBs",
+     "search"
+    ],
+    "lines": [
+     "vstore_sqlite.py keeps a content hash per doc; only changed docs are embedded again.",
+     "Vectors are stored as float32 BLOBs in SQLite; search is brute-force cosine.",
+     "It refuses to mix embedders, so stored vectors stay comparable."
+    ]
+   }
+  },
+  "files": [
+   "04-rag/04-vector-store-persistence/vstore_sqlite.py",
+   "04-rag/04-vector-store-persistence/main.py"
+  ]
+ },
+ "04-rag/05-agentic-rag": {
+  "inputs": [
+   {
+    "name": "question",
+    "kind": "textarea",
+    "default": "How many vacation days do I get?",
+    "label": {
+     "hi": "Sawaal",
+     "en": "Question"
+    },
+    "help": {
+     "hi": "HR ya product knowledge base se",
+     "en": "From the HR or product knowledge base"
+    }
+   },
+   {
+    "name": "mode",
+    "kind": "choice",
+    "arg": "--mode",
+    "default": "crag",
+    "choices": [
+     "crag",
+     "agent"
+    ],
+    "label": {
+     "hi": "Mode",
+     "en": "Mode"
+    },
+    "help": {
+     "hi": "crag = corrective pipeline, agent = LLM khud retrieval tools chunta hai",
+     "en": "crag = corrective pipeline, agent = the LLM picks retrieval tools itself"
+    }
+   }
+  ],
+  "summary": {
+   "hi": "Agentic RAG: do knowledge bases ke beech routing, query rewrite, retrieved docs ka grading (corrective RAG) aur groundedness check.",
+   "en": "Agentic RAG: routing between two knowledge bases, query rewriting, grading retrieved docs (corrective RAG) and a groundedness check."
+  },
+  "watch": {
+   "hi": [
+    "Route: hr ya product KB",
+    "Har retrieved doc ka relevant / not relevant grade",
+    "Rewrite-retry aur groundedness check"
+   ],
+   "en": [
+    "The route: hr or product KB",
+    "Each retrieved doc's relevant / not relevant grade",
+    "The rewrite-retry and the groundedness check"
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "RAG ne khud decide kiya",
+    "flow": [
+     "route KB",
+     "retrieve",
+     "grade docs",
+     "rewrite?",
+     "answer",
+     "grounded?"
+    ],
+    "lines": [
+     "agenticrag_core.py ki CorrectiveRAG pehle sahi knowledge base chunti hai, phir docs ko llm_json se grade karti hai.",
+     "Achhe docs na mile to query rewrite karke dobara retrieve; phir bhi na mile to disclaimer.",
+     "Agent mode mein retrieval ek tool hai aur LLM khud decide karta hai kab bulana hai."
+    ]
+   },
+   "en": {
+    "title": "The RAG decided for itself",
+    "flow": [
+     "route KB",
+     "retrieve",
+     "grade docs",
+     "rewrite?",
+     "answer",
+     "grounded?"
+    ],
+    "lines": [
+     "CorrectiveRAG in agenticrag_core.py first picks the right knowledge base, then grades docs with llm_json.",
+     "Without good docs it rewrites the query and retrieves again; if that fails too, it adds a disclaimer.",
+     "In agent mode retrieval is a tool and the LLM decides when to call it."
+    ]
+   }
+  },
+  "files": [
+   "04-rag/05-agentic-rag/agenticrag_core.py",
+   "04-rag/05-agentic-rag/main.py"
+  ]
+ },
+ "04-rag/06-rag-evaluation": {
+  "inputs": [
+   {
+    "name": "mode",
+    "kind": "choice",
+    "default": "retrieval",
+    "choices": [
+     "retrieval",
+     "generation"
+    ],
+    "label": {
+     "hi": "Kya evaluate karein",
+     "en": "What to evaluate"
+    },
+    "help": {
+     "hi": "retrieval = hit@k/MRR/recall, generation = LLM-as-judge",
+     "en": "retrieval = hit@k/MRR/recall, generation = LLM-as-judge"
+    }
+   },
+   {
+    "name": "limit",
+    "kind": "number",
+    "arg": "--limit",
+    "default": 0,
+    "label": {
+     "hi": "Sawaal limit",
+     "en": "Question limit"
+    },
+    "help": {
+     "hi": "0 = saare 12; real LLM pe paisa bachane ke liye kam rakho",
+     "en": "0 = all 12; keep it low to save money on a real LLM"
+    }
+   }
+  ],
+  "summary": {
+   "hi": "RAG evaluation: labelled sawaalon pe retrieval metrics (hit@k, MRR, recall) aur LLM-as-judge (faithfulness, relevance).",
+   "en": "RAG evaluation: retrieval metrics (hit@k, MRR, recall) on labelled questions and LLM-as-judge (faithfulness, relevance)."
+  },
+  "watch": {
+   "hi": [
+    "Har chunking config ka hit@k, MRR, recall table",
+    "Generation mode mein judge ke 1-5 scores",
+    "Kaunsi config jeeti"
+   ],
+   "en": [
+    "The hit@k, MRR and recall table per chunking config",
+    "The judge's 1-5 scores in generation mode",
+    "Which config wins"
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "RAG ko number mein naapa",
+    "flow": [
+     "labelled Qs",
+     "retrieve",
+     "metrics",
+     "judge",
+     "compare configs"
+    ],
+    "lines": [
+     "rageval_core.py 12 labelled sawaalon pe har chunking config chalata hai aur hit@k, MRR, recall nikaalta hai.",
+     "Generation mode mein ek LLM judge har jawab ko faithfulness aur relevance pe 1-5 deta hai (validated JSON).",
+     "Isi se pata chalta hai ki chunking badalne se sach mein fayda hua ya nahi."
+    ]
+   },
+   "en": {
+    "title": "Measured the RAG in numbers",
+    "flow": [
+     "labelled Qs",
+     "retrieve",
+     "metrics",
+     "judge",
+     "compare configs"
+    ],
+    "lines": [
+     "rageval_core.py runs every chunking config on 12 labelled questions and computes hit@k, MRR and recall.",
+     "In generation mode an LLM judge scores each answer 1-5 on faithfulness and relevance (validated JSON).",
+     "This tells you whether a chunking change actually helped."
+    ]
+   }
+  },
+  "files": [
+   "04-rag/06-rag-evaluation/rageval_core.py",
+   "04-rag/06-rag-evaluation/main.py"
+  ]
+ }
+}

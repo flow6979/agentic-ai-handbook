@@ -1,0 +1,1293 @@
+{
+ "05-agent-communication/01-direct-message-passing": {
+  "inputs": [
+   {
+    "name": "text",
+    "kind": "textarea",
+    "label": {
+     "hi": "Text (summarize + translate hoga)",
+     "en": "Text (will be summarized + translated)"
+    },
+    "help": {
+     "hi": "Khaali chhodo to project ka sample text use hoga.",
+     "en": "Leave empty to use the project's sample text."
+    }
+   },
+   {
+    "name": "lang",
+    "kind": "text",
+    "arg": "--lang",
+    "default": "Hindi",
+    "label": {
+     "hi": "Translate kis language mein",
+     "en": "Translate into"
+    },
+    "help": {
+     "hi": "Translator agent is language mein output dega.",
+     "en": "The translator agent writes in this language."
+    }
+   }
+  ],
+  "summary": {
+   "hi": "Do in-process agents (Summarizer aur Translator) typed Envelope messages se baat karte hain: ek request bhejta hai, dusra reply karta hai, aur AuditLog har message dekhta hai.",
+   "en": "Two in-process agents (Summarizer and Translator) talk through typed Envelope messages: one sends a request, the other replies, and an AuditLog sees every message."
+  },
+  "watch": {
+   "hi": [
+    "Har Envelope mein sender, recipient, type aur correlation_id dekho.",
+    "Request/response (sync) aur event (fire-and-forget) ka fark dekho.",
+    "Audit log mein poori baatcheet ka record."
+   ],
+   "en": [
+    "Look at sender, recipient, type and correlation_id on each Envelope.",
+    "Notice request/response (sync) versus event (fire-and-forget).",
+    "The audit log keeps a record of the whole conversation."
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "MessageBus ne do agents ko joda",
+    "flow": [
+     "Summarizer",
+     "Envelope",
+     "MessageBus",
+     "Translator",
+     "reply"
+    ],
+    "lines": [
+     "dm_bus.py ka MessageBus har Envelope ko sahi recipient tak pahunchata hai.",
+     "SummarizerAgent ne request bheji, TranslatorAgent ne correlation_id ke saath reply kiya (dm_agents.py).",
+     "AuditLogAgent ko events milte rahe bina kisi ko rokke: yahi fire-and-forget hai."
+    ]
+   },
+   "en": {
+    "title": "The MessageBus connected two agents",
+    "flow": [
+     "Summarizer",
+     "Envelope",
+     "MessageBus",
+     "Translator",
+     "reply"
+    ],
+    "lines": [
+     "The MessageBus in dm_bus.py routes every Envelope to the right recipient.",
+     "SummarizerAgent sent a request and TranslatorAgent replied with the same correlation_id (dm_agents.py).",
+     "AuditLogAgent received events without blocking anyone: that is fire-and-forget."
+    ]
+   }
+  },
+  "files": [
+   "05-agent-communication/01-direct-message-passing/dm_bus.py",
+   "05-agent-communication/01-direct-message-passing/dm_agents.py",
+   "05-agent-communication/01-direct-message-passing/main.py"
+  ]
+ },
+ "05-agent-communication/02-agent-as-tool": {
+  "inputs": [
+   {
+    "name": "task",
+    "kind": "textarea",
+    "default": "Our sales went from 950 to 1200 units. What's the growth %? Then write a short launch post about it.",
+    "label": {
+     "hi": "Manager ko kaam",
+     "en": "Task for the manager"
+    },
+    "help": {
+     "hi": "Manager isse specialist agents (tools) mein baantega.",
+     "en": "The manager splits this across specialist agents (tools)."
+    }
+   }
+  ],
+  "summary": {
+   "hi": "Manager agent specialist agents ko normal tools ki tarah call karta hai: har specialist sirf apna chhota task dekhta hai aur JSON result lautaata hai.",
+   "en": "A manager agent calls specialist agents like ordinary tools: each specialist sees only its small task and returns a JSON result."
+  },
+  "watch": {
+   "hi": [
+    "Manager ke tool calls: analyst aur writer jaise specialists.",
+    "Har specialist ka alag context (manager ki poori history nahi).",
+    "Result JSON: ok, output, steps, tokens."
+   ],
+   "en": [
+    "The manager's tool calls to specialists such as analyst and writer.",
+    "Each specialist has its own context (not the manager's full history).",
+    "Result JSON: ok, output, steps, tokens."
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "Agent ek tool ban gaya",
+    "flow": [
+     "Manager",
+     "agent_as_tool()",
+     "Specialist Agent",
+     "JSON result"
+    ],
+    "lines": [
+     "agent_as_tool.py ne ek poore Agent ko @tool jaisa bana diya.",
+     "Manager (agent_as_tool_team.py build_team) ne unhe function ki tarah call kiya.",
+     "Specialist fail ho to bhi manager crash nahi hota: error result mein aata hai."
+    ]
+   },
+   "en": {
+    "title": "An agent became a tool",
+    "flow": [
+     "Manager",
+     "agent_as_tool()",
+     "Specialist Agent",
+     "JSON result"
+    ],
+    "lines": [
+     "agent_as_tool.py wrapped a whole Agent so it looks like a @tool.",
+     "The manager (build_team in agent_as_tool_team.py) called specialists like functions.",
+     "If a specialist fails the manager does not crash: the error comes back in the result."
+    ]
+   }
+  },
+  "files": [
+   "05-agent-communication/02-agent-as-tool/agent_as_tool.py",
+   "05-agent-communication/02-agent-as-tool/agent_as_tool_team.py"
+  ]
+ },
+ "05-agent-communication/03-handoffs": {
+  "inputs": [],
+  "default_stdin": "I was charged twice this month!\nAlso I can't log in, it says account locked.\n",
+  "stdin": {
+   "hi": "Customer ke messages (har line ek turn). Offline mode apne scripted turns chalata hai.",
+   "en": "Customer messages (one turn per line). Offline mode plays its own scripted turns."
+  },
+  "summary": {
+   "hi": "Support desk: triage agent billing ya tech agent ko transfer_to_x tool se control de deta hai; baatcheet ki history saath jaati hai.",
+   "en": "Support desk: the triage agent hands control to the billing or tech agent with a transfer_to_x tool; the conversation history goes along."
+  },
+  "watch": {
+   "hi": [
+    "path: triage -> billing jaisi handoff chain.",
+    "Dusre message pe wahi active agent continue karta hai.",
+    "customer_id server side se inject hota hai, LLM ko nahi dikhta."
+   ],
+   "en": [
+    "The handoff chain in path, such as triage -> billing.",
+    "On the second message the same active agent continues.",
+    "customer_id is injected server side and never shown to the LLM."
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "Control ek agent se dusre ko gaya",
+    "flow": [
+     "triage",
+     "transfer_to_billing",
+     "billing",
+     "tools"
+    ],
+    "lines": [
+     "handoff_swarm.py ka Swarm har agent ko transfer_to_x tools deta hai.",
+     "Triage ne sahi specialist chuna; specialist ne list_invoices / refund_invoice jaise tools chalaye (handoff_support.py).",
+     "Transfers ki limit hai, taaki agents aapas mein ping-pong na karein."
+    ]
+   },
+   "en": {
+    "title": "Control moved from one agent to another",
+    "flow": [
+     "triage",
+     "transfer_to_billing",
+     "billing",
+     "tools"
+    ],
+    "lines": [
+     "The Swarm in handoff_swarm.py gives each agent transfer_to_x tools.",
+     "Triage picked the right specialist, which then ran tools such as list_invoices and refund_invoice (handoff_support.py).",
+     "Transfers are capped so the agents cannot ping-pong forever."
+    ]
+   }
+  },
+  "files": [
+   "05-agent-communication/03-handoffs/handoff_swarm.py",
+   "05-agent-communication/03-handoffs/handoff_support.py"
+  ]
+ },
+ "05-agent-communication/04-shared-blackboard": {
+  "inputs": [
+   {
+    "name": "query",
+    "kind": "text",
+    "default": "4 nights in Goa from Delhi, budget 25000 rupees",
+    "label": {
+     "hi": "Trip request",
+     "en": "Trip request"
+    },
+    "help": {
+     "hi": "Agents isi ko board pe todkar plan banayenge.",
+     "en": "Agents break this down on the board and build a plan."
+    }
+   }
+  ],
+  "summary": {
+   "hi": "Blackboard architecture: flight, hotel, budget aur itinerary agents ek shared board padhte-likhte hain; controller board dekh ke agla agent chunta hai.",
+   "en": "Blackboard architecture: flight, hotel, budget and itinerary agents read and write one shared board; a controller looks at the board and picks the next agent."
+  },
+  "watch": {
+   "hi": [
+    "Controller har round kaunsa agent chalata hai.",
+    "Budget toota to BudgetAgent hotel hata ke 'cheaper' hint chhodta hai.",
+    "Agents aapas mein seedha baat nahi karte, sirf board se."
+   ],
+   "en": [
+    "Which agent the controller runs each round.",
+    "When the budget breaks, BudgetAgent removes the hotel and leaves a 'cheaper' hint.",
+    "Agents never talk directly, only through the board."
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "Shared board se team ne plan banaya",
+    "flow": [
+     "RequestParser",
+     "board",
+     "Flight/Hotel/Budget",
+     "Itinerary"
+    ],
+    "lines": [
+     "blackboard_store.py ka InMemoryBlackboard sabka shared state hai.",
+     "blackboard_trip.py ka Controller board ki halat dekh ke agla KnowledgeSource chunta hai.",
+     "Isse agents loosely coupled rehte hain: naya agent jodna = board pe naya key."
+    ]
+   },
+   "en": {
+    "title": "The team planned through a shared board",
+    "flow": [
+     "RequestParser",
+     "board",
+     "Flight/Hotel/Budget",
+     "Itinerary"
+    ],
+    "lines": [
+     "InMemoryBlackboard in blackboard_store.py is everyone's shared state.",
+     "The Controller in blackboard_trip.py looks at the board and picks the next KnowledgeSource.",
+     "Agents stay loosely coupled: adding an agent means adding a key on the board."
+    ]
+   }
+  },
+  "files": [
+   "05-agent-communication/04-shared-blackboard/blackboard_store.py",
+   "05-agent-communication/04-shared-blackboard/blackboard_trip.py"
+  ]
+ },
+ "05-agent-communication/05-event-bus-pubsub": {
+  "inputs": [],
+  "summary": {
+   "hi": "Asyncio event bus pe order pipeline: fraud-check, notification aur analytics agents topics subscribe karte hain; retry, dead-letter aur idempotency ke saath.",
+   "en": "An order pipeline on an asyncio event bus: fraud-check, notification and analytics agents subscribe to topics, with retries, a dead-letter queue and idempotency."
+  },
+  "watch": {
+   "hi": [
+    "order.created -> fraud check -> order.approved / order.flagged jaise events.",
+    "Fail hua SMS retry hota hai, phir bhi fail to dead-letter mein.",
+    "Duplicate event dobara process nahi hota (idempotent)."
+   ],
+   "en": [
+    "Events like order.created -> fraud check -> order.approved / order.flagged.",
+    "A failed SMS is retried and ends up in the dead-letter queue if it keeps failing.",
+    "A duplicate event is not processed twice (idempotent)."
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "Events se agents jude, bina ek dusre ko jaane",
+    "flow": [
+     "publish",
+     "EventBus",
+     "subscribers",
+     "DLQ"
+    ],
+    "lines": [
+     "pubsub_bus.py ka EventBus har subscriber ki apni queue rakhta hai (at-least-once delivery).",
+     "pubsub_orders.py ke FraudCheckAgent, NotificationAgent, AnalyticsAgent sirf topics jaante hain.",
+     "Browser mein asyncio ek chhote sync loop pe chala, isliye kaam parallel ki jagah baari baari hua."
+    ]
+   },
+   "en": {
+    "title": "Agents connected through events without knowing each other",
+    "flow": [
+     "publish",
+     "EventBus",
+     "subscribers",
+     "DLQ"
+    ],
+    "lines": [
+     "The EventBus in pubsub_bus.py keeps one queue per subscriber (at-least-once delivery).",
+     "FraudCheckAgent, NotificationAgent and AnalyticsAgent in pubsub_orders.py only know topics.",
+     "In the browser asyncio ran on a small sync loop, so work ran in turns instead of in parallel."
+    ]
+   }
+  },
+  "files": [
+   "05-agent-communication/05-event-bus-pubsub/pubsub_bus.py",
+   "05-agent-communication/05-event-bus-pubsub/pubsub_orders.py"
+  ]
+ },
+ "05-agent-communication/06-http-agent-services": {
+  "summary": {
+   "hi": "Har agent ek alag FastAPI service hai; registry se discovery, bearer auth, timeouts/retries, aur async job (POST job -> poll ya webhook).",
+   "en": "Each agent is its own FastAPI service with registry discovery, bearer auth, timeouts/retries, and async jobs (POST job -> poll or webhook)."
+  },
+  "watch": {
+   "hi": [
+    "Services registry mein register hoti hain aur orchestrator unhe dhundhta hai.",
+    "Sync /invoke aur async job ka fark.",
+    "Bina token ke request 401 pe rukti hai."
+   ],
+   "en": [
+    "Services register with the registry and the orchestrator discovers them.",
+    "The difference between sync /invoke and an async job.",
+    "A request without a token stops at 401."
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "Recorded run: agents HTTP pe baat kar rahe the",
+    "flow": [
+     "orchestrator",
+     "registry",
+     "POST /invoke",
+     "job poll"
+    ],
+    "lines": [
+     "httpsvc_registry.py registry hai, httpsvc_service.py har agent ko FastAPI app banata hai.",
+     "httpsvc_client.py ka AgentClient timeouts aur retries (sirf 5xx pe) sambhalta hai.",
+     "Browser mein servers nahi chal sakte, isliye yeh asli local run ki recording hai."
+    ]
+   },
+   "en": {
+    "title": "Recorded run: agents talking over HTTP",
+    "flow": [
+     "orchestrator",
+     "registry",
+     "POST /invoke",
+     "job poll"
+    ],
+    "lines": [
+     "httpsvc_registry.py is the registry; httpsvc_service.py turns each agent into a FastAPI app.",
+     "AgentClient in httpsvc_client.py handles timeouts and retries (only on 5xx).",
+     "Servers cannot run in a browser, so this is a recording of a real local run."
+    ]
+   }
+  },
+  "files": [
+   "05-agent-communication/06-http-agent-services/httpsvc_service.py",
+   "05-agent-communication/06-http-agent-services/httpsvc_registry.py",
+   "05-agent-communication/06-http-agent-services/httpsvc_client.py",
+   "05-agent-communication/06-http-agent-services/httpsvc_agents.py"
+  ]
+ },
+ "05-agent-communication/07-mcp/01-mcp-server-stdio": {
+  "summary": {
+   "hi": "SQLite notes ka MCP server (tools, resources, resource template, prompts) stdio pe; client JSON-RPC se usse baat karta hai.",
+   "en": "An MCP server for SQLite notes (tools, resources, a resource template, prompts) over stdio; a client talks to it with JSON-RPC."
+  },
+  "watch": {
+   "hi": [
+    "initialize -> capabilities handshake.",
+    "tools/list, resources/list, prompts/list.",
+    "tools/call ka request aur result JSON."
+   ],
+   "en": [
+    "initialize -> the capabilities handshake.",
+    "tools/list, resources/list, prompts/list.",
+    "The tools/call request and result JSON."
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "Recorded run: MCP ka JSON-RPC lifecycle",
+    "flow": [
+     "initialize",
+     "tools/list",
+     "tools/call",
+     "result"
+    ],
+    "lines": [
+     "mcp_notes_server.py ka build_server() tools, resources aur prompts declare karta hai (mcp 2.2 MCPServer).",
+     "Client ne pehle initialize kiya, phir list kiya, phir tool call kiya.",
+     "stdio ke liye subprocess chahiye jo browser mein nahi hota, isliye yeh recording hai."
+    ]
+   },
+   "en": {
+    "title": "Recorded run: the MCP JSON-RPC lifecycle",
+    "flow": [
+     "initialize",
+     "tools/list",
+     "tools/call",
+     "result"
+    ],
+    "lines": [
+     "build_server() in mcp_notes_server.py declares tools, resources and prompts (mcp 2.2 MCPServer).",
+     "The client initialized first, then listed, then called a tool.",
+     "stdio needs a subprocess, which a browser does not have, so this is a recording."
+    ]
+   }
+  },
+  "files": [
+   "05-agent-communication/07-mcp/01-mcp-server-stdio/mcp_notes_server.py",
+   "05-agent-communication/07-mcp/01-mcp-server-stdio/raw_jsonrpc_demo.py"
+  ],
+  "lab_route": "/labs/comm"
+ },
+ "05-agent-communication/07-mcp/02-mcp-client-agent": {
+  "summary": {
+   "hi": "LLM-agnostic agent jo MCP servers se judta hai, unke tools ko agentkit Tools mein badalta hai (bridge) aur agent loop se chalata hai.",
+   "en": "An LLM-agnostic agent that connects to MCP servers, converts their tools into agentkit Tools (a bridge) and runs them through the agent loop."
+  },
+  "watch": {
+   "hi": [
+    "Kaunse servers connect hue aur kitne tools mile.",
+    "Agent ka tool call MCP ke through server tak jaata hai.",
+    "Destructive tool se pehle approval."
+   ],
+   "en": [
+    "Which servers connected and how many tools were found.",
+    "The agent's tool call travels through MCP to the server.",
+    "Approval before a destructive tool."
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "Recorded run: agent ne MCP tools use kiye",
+    "flow": [
+     "Agent",
+     "MCPBridge",
+     "MCP server",
+     "tool result"
+    ],
+    "lines": [
+     "mcp_bridge.py ka MCPBridge MCP tool schemas ko agentkit Tool banata hai.",
+     "mcp_client_agent.py ka build_agent kai servers jod sakta hai; confirm_destructive risky tools rokta hai.",
+     "Server subprocess mein chalta hai, isliye website pe recording hai."
+    ]
+   },
+   "en": {
+    "title": "Recorded run: the agent used MCP tools",
+    "flow": [
+     "Agent",
+     "MCPBridge",
+     "MCP server",
+     "tool result"
+    ],
+    "lines": [
+     "MCPBridge in mcp_bridge.py turns MCP tool schemas into agentkit Tools.",
+     "build_agent in mcp_client_agent.py can connect several servers; confirm_destructive guards risky tools.",
+     "The server runs in a subprocess, so the website shows a recording."
+    ]
+   }
+  },
+  "files": [
+   "05-agent-communication/07-mcp/02-mcp-client-agent/mcp_bridge.py",
+   "05-agent-communication/07-mcp/02-mcp-client-agent/mcp_client_agent.py",
+   "05-agent-communication/07-mcp/02-mcp-client-agent/mcp_utils_server.py"
+  ],
+  "lab_route": "/labs/comm"
+ },
+ "05-agent-communication/07-mcp/03-mcp-http-transport": {
+  "summary": {
+   "hi": "Wahi MCP server Streamable HTTP pe (remote server), bearer auth ke saath; security guards jaise tool pinning aur untrusted output wrapping.",
+   "en": "The same MCP server over Streamable HTTP (a remote server) with bearer auth, plus security guards such as tool pinning and wrapping untrusted output."
+  },
+  "watch": {
+   "hi": [
+    "--self-host se server aur client ek hi process mein.",
+    "HTTP pe wahi JSON-RPC messages.",
+    "Agent note add karke search karta hai."
+   ],
+   "en": [
+    "--self-host runs server and client in one process.",
+    "The same JSON-RPC messages, over HTTP.",
+    "The agent adds a note and then searches for it."
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "Recorded run: MCP over HTTP",
+    "flow": [
+     "Agent",
+     "HTTP client",
+     "/mcp endpoint",
+     "notes"
+    ],
+    "lines": [
+     "mcp_http_server.py ka build_http_app server ko HTTP endpoint banata hai (BearerAuthMiddleware ke saath).",
+     "mcp_http_client.py ka http_transport client ko us URL se jodta hai.",
+     "mcp_security.py tool poisoning aur prompt injection se bachav dikhata hai."
+    ]
+   },
+   "en": {
+    "title": "Recorded run: MCP over HTTP",
+    "flow": [
+     "Agent",
+     "HTTP client",
+     "/mcp endpoint",
+     "notes"
+    ],
+    "lines": [
+     "build_http_app in mcp_http_server.py exposes the server as an HTTP endpoint (with BearerAuthMiddleware).",
+     "http_transport in mcp_http_client.py connects the client to that URL.",
+     "mcp_security.py shows defenses against tool poisoning and prompt injection."
+    ]
+   }
+  },
+  "files": [
+   "05-agent-communication/07-mcp/03-mcp-http-transport/mcp_http_server.py",
+   "05-agent-communication/07-mcp/03-mcp-http-transport/mcp_http_client.py",
+   "05-agent-communication/07-mcp/03-mcp-http-transport/mcp_security.py"
+  ],
+  "lab_route": "/labs/comm"
+ },
+ "05-agent-communication/08-a2a/01-a2a-server": {
+  "summary": {
+   "hi": "Currency/travel expert agent A2A server ke roop mein: Agent Card, JSON-RPC message/send, task lifecycle aur artifacts.",
+   "en": "A currency/travel expert agent served over A2A: an Agent Card, JSON-RPC message/send, the task lifecycle and artifacts."
+  },
+  "watch": {
+   "hi": [
+    "GET /.well-known/agent.json: naam aur skills.",
+    "message/send ka task aur uska state (completed).",
+    "Server logs mein agent ke andar ke tool calls."
+   ],
+   "en": [
+    "GET /.well-known/agent.json: the name and skills.",
+    "The task returned by message/send and its state (completed).",
+    "The agent's internal tool calls in the server logs."
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "Recorded run: ek A2A server se baat",
+    "flow": [
+     "Agent Card",
+     "message/send",
+     "task",
+     "completed"
+    ],
+    "lines": [
+     "a2a_travel_agent.py ka create_app agentkit Agent ko A2A app banata hai; make_card skills batata hai.",
+     "a2a_protocol.py mein Message, Part, TaskState jaise types hain.",
+     "Server (uvicorn) browser mein nahi chal sakta, isliye Terminal 1 + Terminal 2 ka asli run record kiya."
+    ]
+   },
+   "en": {
+    "title": "Recorded run: talking to an A2A server",
+    "flow": [
+     "Agent Card",
+     "message/send",
+     "task",
+     "completed"
+    ],
+    "lines": [
+     "create_app in a2a_travel_agent.py serves an agentkit Agent as an A2A app; make_card lists its skills.",
+     "a2a_protocol.py holds the Message, Part and TaskState types.",
+     "The server (uvicorn) cannot run in a browser, so a real Terminal 1 + Terminal 2 run was recorded."
+    ]
+   }
+  },
+  "files": [
+   "05-agent-communication/08-a2a/01-a2a-server/a2a_travel_agent.py",
+   "05-agent-communication/08-a2a/01-a2a-server/a2a_server_lib.py",
+   "05-agent-communication/08-a2a/01-a2a-server/a2a_protocol.py"
+  ],
+  "lab_route": "/labs/comm"
+ },
+ "05-agent-communication/08-a2a/02-a2a-client-orchestrator": {
+  "summary": {
+   "hi": "Orchestrator agents ko unke card se dhundhta hai, skill se chunta hai, task delegate karta hai, aur input-required pe dobara jawab bhejta hai.",
+   "en": "An orchestrator discovers agents from their cards, picks one by skill, delegates a task, and answers again when the task is input-required."
+  },
+  "watch": {
+   "hi": [
+    "Card fetch aur skill ke hisaab se agent choice.",
+    "input-required state: agent ne currency poochi.",
+    "Usi taskId pe follow-up se completed."
+   ],
+   "en": [
+    "Card fetch and choosing an agent by skill.",
+    "The input-required state: the agent asked which currency.",
+    "A follow-up on the same taskId leads to completed."
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "Recorded run: orchestrator ne kaam delegate kiya",
+    "flow": [
+     "AgentRegistry",
+     "SkillRouter",
+     "delegate",
+     "input-required"
+    ],
+    "lines": [
+     "a2a_orchestrator.py ka AgentRegistry cards padhta hai; SkillRouter sahi agent chunta hai.",
+     "delegate() message/send bhejta hai aur input-required pe user se jawab leke wahi task continue karta hai.",
+     "Remote agent server chahiye, isliye website pe recording hai."
+    ]
+   },
+   "en": {
+    "title": "Recorded run: the orchestrator delegated work",
+    "flow": [
+     "AgentRegistry",
+     "SkillRouter",
+     "delegate",
+     "input-required"
+    ],
+    "lines": [
+     "AgentRegistry in a2a_orchestrator.py reads the cards; SkillRouter picks the right agent.",
+     "delegate() sends message/send and, on input-required, continues the same task with the user's answer.",
+     "The remote agent needs a server, so the website shows a recording."
+    ]
+   }
+  },
+  "files": [
+   "05-agent-communication/08-a2a/02-a2a-client-orchestrator/a2a_orchestrator.py",
+   "05-agent-communication/08-a2a/02-a2a-client-orchestrator/a2a_client.py"
+  ],
+  "lab_route": "/labs/comm"
+ },
+ "05-agent-communication/08-a2a/03-multi-vendor-demo": {
+  "summary": {
+   "hi": "Do alag tarah se bane A2A agents (agentkit agent aur bina LLM ka hand-written agent) ek trip planner orchestrator ke through saath kaam karte hain.",
+   "en": "Two A2A agents built in different ways (an agentkit agent and a hand-written agent with no LLM) work together through a trip planner orchestrator."
+  },
+  "watch": {
+   "hi": [
+    "Dono agents ke cards alag hain, protocol same.",
+    "Packing agent bina LLM ke jawab deta hai.",
+    "Trip plan mein dono ke results jude hue."
+   ],
+   "en": [
+    "The two agents have different cards but speak the same protocol.",
+    "The packing agent answers without any LLM.",
+    "The trip plan combines both results."
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "Recorded run: alag vendors, ek protocol",
+    "flow": [
+     "planner",
+     "travel agent",
+     "packing agent",
+     "TripPlan"
+    ],
+    "lines": [
+     "a2a_packing_agent_raw.py bina SDK aur bina LLM ke A2A bolta hai.",
+     "a2a_trip_planner.py ka plan_trip dono ko call karke TripPlan banata hai.",
+     "Yahi A2A ka fayda hai: andar kuch bhi ho, bahar protocol ek."
+    ]
+   },
+   "en": {
+    "title": "Recorded run: different vendors, one protocol",
+    "flow": [
+     "planner",
+     "travel agent",
+     "packing agent",
+     "TripPlan"
+    ],
+    "lines": [
+     "a2a_packing_agent_raw.py speaks A2A with no SDK and no LLM.",
+     "plan_trip in a2a_trip_planner.py calls both and builds a TripPlan.",
+     "That is the point of A2A: whatever is inside, the protocol outside is the same."
+    ]
+   }
+  },
+  "files": [
+   "05-agent-communication/08-a2a/03-multi-vendor-demo/a2a_trip_planner.py",
+   "05-agent-communication/08-a2a/03-multi-vendor-demo/a2a_packing_agent_raw.py"
+  ],
+  "lab_route": "/labs/comm"
+ },
+ "06-multi-agent-systems/01-role-design-basics": {
+  "inputs": [
+   {
+    "name": "topic",
+    "kind": "text",
+    "default": "What is an API?",
+    "label": {
+     "hi": "Writer kis topic pe likhe",
+     "en": "Topic for the writer"
+    },
+    "help": {
+     "hi": "Writer draft likhega, Editor review karega.",
+     "en": "The writer drafts, the editor reviews."
+    }
+   },
+   {
+    "name": "show_prompts",
+    "kind": "flag",
+    "arg": "--show-prompts",
+    "default": true,
+    "label": {
+     "hi": "Role system prompts dikhao",
+     "en": "Show role system prompts"
+    },
+    "help": {
+     "hi": "Role (persona, goal, rules) se bane prompts print honge.",
+     "en": "Prints the prompts generated from each role (persona, goal, rules)."
+    }
+   }
+  ],
+  "summary": {
+   "hi": "Role kya hota hai: persona, goal, tools, output contract. Writer aur Editor do roles milke draft ko revise karte hain.",
+   "en": "What a role is: persona, goal, tools and an output contract. A Writer and an Editor revise a draft together."
+  },
+  "watch": {
+   "hi": [
+    "Role se bane system prompts.",
+    "Editor ka verdict (approve ya changes).",
+    "Revise loop kab rukta hai."
+   ],
+   "en": [
+    "The system prompts generated from each role.",
+    "The editor's verdict (approve or changes).",
+    "When the revise loop stops."
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "Do roles ne milke likha",
+    "flow": [
+     "Role",
+     "system prompt",
+     "Writer draft",
+     "Editor verdict"
+    ],
+    "lines": [
+     "role_design.py ka Role dataclass persona, goal aur rules se system prompt banata hai.",
+     "write_with_editor() Writer aur Editor ko baari baari chalata hai jab tak Editor approve na kare.",
+     "Achha role = saaf output contract; BAD_ROLE jaisa vague role drift karta hai."
+    ]
+   },
+   "en": {
+    "title": "Two roles wrote together",
+    "flow": [
+     "Role",
+     "system prompt",
+     "Writer draft",
+     "Editor verdict"
+    ],
+    "lines": [
+     "The Role dataclass in role_design.py builds a system prompt from persona, goal and rules.",
+     "write_with_editor() alternates Writer and Editor until the Editor approves.",
+     "A good role has a clear output contract; a vague one like BAD_ROLE drifts."
+    ]
+   }
+  },
+  "files": [
+   "06-multi-agent-systems/01-role-design-basics/role_design.py"
+  ]
+ },
+ "06-multi-agent-systems/02-sequential-crew": {
+  "inputs": [
+   {
+    "name": "idea",
+    "kind": "text",
+    "default": "a tiny calculator library with an add function",
+    "label": {
+     "hi": "Product idea",
+     "en": "Product idea"
+    },
+    "help": {
+     "hi": "PM -> Architect -> Developer -> QA isse banayenge.",
+     "en": "PM -> Architect -> Developer -> QA will build this."
+    }
+   }
+  ],
+  "summary": {
+   "hi": "Software team pipeline: Product Manager, Architect, Developer aur QA ek ke baad ek, har task ka output agle ka context.",
+   "en": "A software team pipeline: Product Manager, Architect, Developer and QA in sequence, each task's output becoming the next one's context."
+  },
+  "watch": {
+   "hi": [
+    "Har role ka task aur expected output.",
+    "Developer ka save_file tool.",
+    "QA developer ko wapas bhej sakta hai (limited baar)."
+   ],
+   "en": [
+    "Each role's task and expected output.",
+    "The developer's save_file tool.",
+    "QA can send work back to the developer a limited number of times."
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "Crew ne line mein kaam kiya",
+    "flow": [
+     "PM",
+     "Architect",
+     "Developer",
+     "QA"
+    ],
+    "lines": [
+     "sequential_crew.py ka SoftwareCrew tasks ko order mein chalata hai; sirf declared context aage jaata hai.",
+     "Developer ne save_file se Workspace mein files likhin.",
+     "QAVerdict fail ho to Developer ko feedback ke saath dobara mauka."
+    ]
+   },
+   "en": {
+    "title": "The crew worked in a line",
+    "flow": [
+     "PM",
+     "Architect",
+     "Developer",
+     "QA"
+    ],
+    "lines": [
+     "SoftwareCrew in sequential_crew.py runs tasks in order; only the declared context is passed on.",
+     "The developer wrote files into the Workspace with save_file.",
+     "If the QAVerdict fails, the developer gets another try with the feedback."
+    ]
+   }
+  },
+  "files": [
+   "06-multi-agent-systems/02-sequential-crew/sequential_crew.py"
+  ],
+  "lab_route": "/labs/multi"
+ },
+ "06-multi-agent-systems/03-supervisor-team": {
+  "inputs": [
+   {
+    "name": "question",
+    "kind": "text",
+    "default": "Should I install solar panels at home?",
+    "label": {
+     "hi": "Team ke liye sawaal",
+     "en": "Question for the team"
+    },
+    "help": {
+     "hi": "Supervisor researcher, writer aur critic ko kaam baantega.",
+     "en": "The supervisor routes work to the researcher, writer and critic."
+    }
+   },
+   {
+    "name": "max_rounds",
+    "kind": "number",
+    "arg": "--max-rounds",
+    "default": 8,
+    "label": {
+     "hi": "Max rounds",
+     "en": "Max rounds"
+    },
+    "help": {
+     "hi": "Itne rounds ke baad supervisor ruk jayega.",
+     "en": "The supervisor stops after this many rounds."
+    }
+   }
+  ],
+  "summary": {
+   "hi": "Supervisor (router LLM) har round decide karta hai kaunsa worker agla chalega: researcher (tools ke saath), writer ya critic, jab tak FINISH na ho.",
+   "en": "A supervisor (router LLM) decides each round which worker goes next: the researcher (with tools), the writer or the critic, until FINISH."
+  },
+  "watch": {
+   "hi": [
+    "Route JSON: next aur reason.",
+    "Workers sirf apna hissa dekhte hain, supervisor poora board.",
+    "Rukne ki wajah: FINISH, max_rounds ya repeat guard."
+   ],
+   "en": [
+    "The Route JSON: next and reason.",
+    "Workers see only their slice; the supervisor sees the whole board.",
+    "Why it stopped: FINISH, max_rounds or the repeat guard."
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "Supervisor ne team chalayi",
+    "flow": [
+     "Supervisor",
+     "Route JSON",
+     "worker",
+     "board"
+    ],
+    "lines": [
+     "supervisor_team.py ka SupervisorTeam llm_json se Route (next, reason) leta hai.",
+     "Har worker ka output BoardEntry banke shared board pe jaata hai.",
+     "max_rounds aur same worker baar baar na chune jaane ka guard infinite loop rokte hain."
+    ]
+   },
+   "en": {
+    "title": "The supervisor ran the team",
+    "flow": [
+     "Supervisor",
+     "Route JSON",
+     "worker",
+     "board"
+    ],
+    "lines": [
+     "SupervisorTeam in supervisor_team.py gets a Route (next, reason) through llm_json.",
+     "Each worker's output goes on the shared board as a BoardEntry.",
+     "max_rounds and a guard against picking the same worker repeatedly prevent infinite loops."
+    ]
+   }
+  },
+  "files": [
+   "06-multi-agent-systems/03-supervisor-team/supervisor_team.py"
+  ],
+  "lab_route": "/labs/multi"
+ },
+ "06-multi-agent-systems/04-hierarchical-teams": {
+  "inputs": [
+   {
+    "name": "goal",
+    "kind": "text",
+    "default": "Launch a habit-tracker mobile app next month",
+    "label": {
+     "hi": "Launch goal",
+     "en": "Launch goal"
+    },
+    "help": {
+     "hi": "Manager isse team leads mein, leads workers mein baantenge.",
+     "en": "The manager splits this across team leads, and leads across workers."
+    }
+   }
+  ],
+  "summary": {
+   "hi": "Manager -> team leads (marketing, engineering) -> workers. Har level plan todta hai, results upar summary banke aate hain.",
+   "en": "Manager -> team leads (marketing, engineering) -> workers. Each level breaks the plan down and results roll up as summaries."
+  },
+  "watch": {
+   "hi": [
+    "LaunchManager ka plan: kaunsi team kya karegi.",
+    "TeamLead workers ko tasks deta hai.",
+    "Report upar summary ki tarah aati hai."
+   ],
+   "en": [
+    "The LaunchManager's plan: which team does what.",
+    "Each TeamLead hands tasks to workers.",
+    "Reports roll up as summaries."
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "Teen level ki team",
+    "flow": [
+     "LaunchManager",
+     "TeamLead",
+     "workers",
+     "LaunchResult"
+    ],
+    "lines": [
+     "hierarchical_teams.py ka LaunchManager goal ko Assignments mein todta hai.",
+     "TeamLead (lead_prompt) apne workers ko WorkerTask deta hai aur TeamReport banata hai.",
+     "Galat team/worker naam skip hote hain aur record hote hain."
+    ]
+   },
+   "en": {
+    "title": "A three-level team",
+    "flow": [
+     "LaunchManager",
+     "TeamLead",
+     "workers",
+     "LaunchResult"
+    ],
+    "lines": [
+     "LaunchManager in hierarchical_teams.py splits the goal into Assignments.",
+     "Each TeamLead (lead_prompt) gives its workers WorkerTasks and writes a TeamReport.",
+     "Invented team or worker names are skipped and recorded."
+    ]
+   }
+  },
+  "files": [
+   "06-multi-agent-systems/04-hierarchical-teams/hierarchical_teams.py"
+  ]
+ },
+ "06-multi-agent-systems/05-group-chat": {
+  "inputs": [
+   {
+    "name": "task",
+    "kind": "text",
+    "default": "Plan a 3-day Goa trip for 2 people under INR 30,000",
+    "label": {
+     "hi": "Group ka task",
+     "en": "Task for the group"
+    },
+    "help": {
+     "hi": "Saare roles ek hi chat mein isse plan karenge.",
+     "en": "All roles plan this in one shared chat."
+    }
+   },
+   {
+    "name": "selector",
+    "kind": "choice",
+    "arg": "--selector",
+    "default": "llm",
+    "choices": [
+     "llm",
+     "rules",
+     "round_robin"
+    ],
+    "label": {
+     "hi": "Agla speaker kaun chunega",
+     "en": "Who picks the next speaker"
+    },
+    "help": {
+     "hi": "llm = manager LLM, rules = keywords/@mention, round_robin = baari baari.",
+     "en": "llm = a manager LLM, rules = keywords/@mention, round_robin = in turns."
+    }
+   },
+   {
+    "name": "max_turns",
+    "kind": "number",
+    "arg": "--max-turns",
+    "default": 10,
+    "label": {
+     "hi": "Max turns",
+     "en": "Max turns"
+    },
+    "help": {
+     "hi": "Itne turns ke baad chat ruk jayegi.",
+     "en": "The chat stops after this many turns."
+    }
+   }
+  ],
+  "summary": {
+   "hi": "AutoGen jaisa group chat: saare roles ek transcript share karte hain; selector agla speaker chunta hai; TERMINATE ya consensus pe khatam.",
+   "en": "An AutoGen-style group chat: all roles share one transcript, a selector picks the next speaker, and it ends on TERMINATE or consensus."
+  },
+  "watch": {
+   "hi": [
+    "Speakers ka order selector ke hisaab se.",
+    "Rukne ki wajah aur kitne turns.",
+    "Alag selector chuno aur fark dekho."
+   ],
+   "en": [
+    "The speaker order chosen by the selector.",
+    "Why it stopped and after how many turns.",
+    "Pick a different selector and compare."
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "Ek chat, kai roles",
+    "flow": [
+     "task",
+     "selector",
+     "speaker",
+     "TERMINATE"
+    ],
+    "lines": [
+     "group_chat.py ka GroupChat sab messages ek shared transcript mein rakhta hai.",
+     "RoundRobinSelector, RuleBasedSelector ya LLMSelector agla speaker chunte hain (LLM galat naam de to fallback).",
+     "TERMINATE keyword, consensus ya max_turns pe chat rukti hai."
+    ]
+   },
+   "en": {
+    "title": "One chat, many roles",
+    "flow": [
+     "task",
+     "selector",
+     "speaker",
+     "TERMINATE"
+    ],
+    "lines": [
+     "GroupChat in group_chat.py keeps every message in one shared transcript.",
+     "RoundRobinSelector, RuleBasedSelector or LLMSelector picks the next speaker (with a fallback if the LLM names someone invalid).",
+     "The chat stops on the TERMINATE keyword, consensus or max_turns."
+    ]
+   }
+  },
+  "files": [
+   "06-multi-agent-systems/05-group-chat/group_chat.py"
+  ],
+  "lab_route": "/labs/multi"
+ },
+ "06-multi-agent-systems/06-debate-and-judge": {
+  "inputs": [
+   {
+    "name": "mode",
+    "kind": "choice",
+    "default": "debate",
+    "choices": [
+     "debate",
+     "consistency",
+     "moa"
+    ],
+    "label": {
+     "hi": "Mode",
+     "en": "Mode"
+    },
+    "help": {
+     "hi": "debate = pro/con + judge, consistency = kai samples ka majority, moa = mixture of agents.",
+     "en": "debate = pro/con + judge, consistency = majority of several samples, moa = mixture of agents."
+    }
+   },
+   {
+    "name": "text",
+    "kind": "text",
+    "default": "Should a startup use microservices from day one?",
+    "label": {
+     "hi": "Topic / sawaal",
+     "en": "Topic / question"
+    },
+    "help": {
+     "hi": "Debate ka motion ya consistency/moa ka sawaal.",
+     "en": "The debate motion, or the question for consistency/moa."
+    }
+   },
+   {
+    "name": "rounds",
+    "kind": "number",
+    "arg": "--rounds",
+    "default": 2,
+    "label": {
+     "hi": "Debate rounds",
+     "en": "Debate rounds"
+    },
+    "help": {
+     "hi": "Sirf debate mode mein.",
+     "en": "Debate mode only."
+    }
+   },
+   {
+    "name": "judges",
+    "kind": "number",
+    "arg": "--judges",
+    "default": 1,
+    "label": {
+     "hi": "Judges (jury)",
+     "en": "Judges (jury)"
+    },
+    "help": {
+     "hi": "1 se zyada = jury majority vote.",
+     "en": "More than 1 = jury majority vote."
+    }
+   },
+   {
+    "name": "samples",
+    "kind": "number",
+    "arg": "--samples",
+    "default": 5,
+    "label": {
+     "hi": "Samples",
+     "en": "Samples"
+    },
+    "help": {
+     "hi": "Sirf consistency mode mein.",
+     "en": "Consistency mode only."
+    }
+   }
+  ],
+  "summary": {
+   "hi": "Agents ek dusre se behas karte hain aur judge rubric se score deta hai; saath mein self-consistency (majority vote) aur mixture-of-agents.",
+   "en": "Agents argue against each other and a judge scores them with a rubric; also self-consistency (majority vote) and mixture-of-agents."
+  },
+  "watch": {
+   "hi": [
+    "PRO aur CON ke arguments har round.",
+    "Judge ke scores aur winner.",
+    "judges > 1 pe jury votes."
+   ],
+   "en": [
+    "PRO and CON arguments each round.",
+    "The judge's scores and the winner.",
+    "Jury votes when judges > 1."
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "Behas se faisla",
+    "flow": [
+     "PRO",
+     "CON",
+     "Judge rubric",
+     "winner"
+    ],
+    "lines": [
+     "debate_judge.py ka debate() rounds chalata hai; debater_prompt har side ko apna stance deta hai.",
+     "Judge Verdict mein SideScore (rubric) deta hai; jury ho to majority.",
+     "self_consistency() aur mixture_of_agents() kai jawabon ko milakar behtar answer banate hain."
+    ]
+   },
+   "en": {
+    "title": "A decision through debate",
+    "flow": [
+     "PRO",
+     "CON",
+     "Judge rubric",
+     "winner"
+    ],
+    "lines": [
+     "debate() in debate_judge.py runs the rounds; debater_prompt gives each side its stance.",
+     "The judge returns a Verdict with SideScores (rubric); a jury takes the majority.",
+     "self_consistency() and mixture_of_agents() combine several answers into a better one."
+    ]
+   }
+  },
+  "files": [
+   "06-multi-agent-systems/06-debate-and-judge/debate_judge.py"
+  ]
+ },
+ "06-multi-agent-systems/07-swarm-handoffs": {
+  "inputs": [
+   {
+    "name": "once",
+    "kind": "text",
+    "arg": "--once",
+    "default": "My order A100 never arrived, I want a refund",
+    "label": {
+     "hi": "Customer ka message",
+     "en": "Customer message"
+    },
+    "help": {
+     "hi": "Browser mein interactive chat nahi hota, isliye ek message bhejo. Try: 'where is my order A200?' ya 'my wifi router is not working'.",
+     "en": "The browser cannot run an interactive chat, so send one message. Try: 'where is my order A200?' or 'my wifi router is not working'."
+    }
+   }
+  ],
+  "summary": {
+   "hi": "Bina central controller ke peers (triage, orders, refunds, tech) ek dusre ko handoff karte hain; shared context variables saath chalte hain.",
+   "en": "Peers (triage, orders, refunds, tech) hand off to each other with no central controller; shared context variables travel along."
+  },
+  "watch": {
+   "hi": [
+    "path: triage -> refunds jaisi chain.",
+    "context mein customer_id aur order details.",
+    "Sirf allowed handoff edges; max_handoffs ping-pong rokta hai."
+   ],
+   "en": [
+    "The path chain, such as triage -> refunds.",
+    "customer_id and order details in the context.",
+    "Only allowed handoff edges; max_handoffs stops ping-pong."
+   ]
+  },
+  "explain": {
+   "hi": {
+    "title": "Swarm: control khud aage badha",
+    "flow": [
+     "triage",
+     "transfer_to_*",
+     "specialist",
+     "reply"
+    ],
+    "lines": [
+     "swarm_handoffs.py ka Swarm har handoff ko auto-generated transfer_to_* tool banata hai.",
+     "lookup_order, issue_refund, troubleshoot jaise tools shared context use karte hain.",
+     "Supervisor wale lab se fark: yahan koi boss nahi, agents khud control dete hain."
+    ]
+   },
+   "en": {
+    "title": "Swarm: control moved on by itself",
+    "flow": [
+     "triage",
+     "transfer_to_*",
+     "specialist",
+     "reply"
+    ],
+    "lines": [
+     "The Swarm in swarm_handoffs.py turns each handoff into an auto-generated transfer_to_* tool.",
+     "Tools such as lookup_order, issue_refund and troubleshoot use the shared context.",
+     "Unlike the supervisor lab there is no boss: agents pass control themselves."
+    ]
+   }
+  },
+  "files": [
+   "06-multi-agent-systems/07-swarm-handoffs/swarm_handoffs.py"
+  ],
+  "lab_route": "/labs/multi"
+ }
+}

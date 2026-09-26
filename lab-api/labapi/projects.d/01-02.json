@@ -1,0 +1,265 @@
+{
+ "01-production-agent/support-desk": {
+  "inputs": [
+   {"name": "user", "kind": "choice", "arg": "--user", "default": "cust_1", "choices": ["cust_1", "cust_2"],
+    "label": {"hi": "Customer", "en": "Customer"}, "help": {"hi": "cust_1 = Asha, cust_2 = Rahul (seed data mein dono ke orders hain)", "en": "cust_1 = Asha, cust_2 = Rahul (both have orders in the seed data)"}},
+   {"name": "read_only", "kind": "flag", "arg": "--read-only", "default": false,
+    "label": {"hi": "Read-only mode", "en": "Read-only mode"}, "help": {"hi": "WRITE-tier tools (refund) band kar do", "en": "Disable WRITE-tier tools (refunds)"}},
+   {"name": "cmd", "kind": "choice", "default": "ask", "choices": ["ask"],
+    "label": {"hi": "Command", "en": "Command"}, "help": {"hi": "one-shot sawaal (repl/serve browser mein nahi)", "en": "one-shot question (repl/serve don't fit the browser)"}},
+   {"name": "message", "kind": "textarea", "default": "Where is my order ORD-1001?",
+    "label": {"hi": "Customer ka message", "en": "Customer message"}, "help": {"hi": "e.g. 'I want a refund for ORD-1002'", "en": "e.g. 'I want a refund for ORD-1002'"}}
+  ],
+  "summary": {"hi": "Ek production-style support agent ek message handle karta hai: guardrails, intent, tools, policy aur cost tracking ke saath.", "en": "A production-style support agent handles one message with guardrails, intent detection, tools, policy checks and cost tracking."},
+  "watch": {
+   "hi": ["Input guardrail aur PII redaction pehle chalte hain", "Intent (structured output) ke baad agent tool chunta hai", "Refund jaise WRITE tool pe policy tier check hota hai", "End mein tokens aur estimated cost"],
+   "en": ["The input guardrail and PII redaction run first", "After intent detection (structured output) the agent picks a tool", "WRITE tools like refunds go through a policy tier check", "Tokens and estimated cost at the end"]
+  },
+  "explain": {
+   "hi": {"title": "Support request poori pipeline se guzri", "flow": ["guardrails", "intent", "agent + tools", "policy", "reply"], "lines": ["supportdesk/guardrails.py ne input check kiya aur PII log se pehle hataya.", "supportdesk/intent.py ne llm_json se intent nikala, phir agent ne store.py ke tools chalaye.", "Refund jaise risky tools supportdesk/policy.py ke tier aur approve hook se guzarte hain; service.py sab jodta hai."]},
+   "en": {"title": "The support request went through the full pipeline", "flow": ["guardrails", "intent", "agent + tools", "policy", "reply"], "lines": ["supportdesk/guardrails.py checked the input and redacted PII before logging.", "supportdesk/intent.py extracted the intent with llm_json, then the agent ran the tools from store.py.", "Risky tools like refunds pass through the tiers and approve hook in supportdesk/policy.py; service.py wires it all together."]}
+  },
+  "files": ["01-production-agent/support-desk/supportdesk/service.py", "01-production-agent/support-desk/supportdesk/policy.py", "01-production-agent/support-desk/supportdesk/guardrails.py", "01-production-agent/support-desk/supportdesk/intent.py"]
+ },
+
+ "02-agentic-architectures/00-workflows-vs-agents": {
+  "inputs": [
+   {"name": "user", "kind": "choice", "arg": "--user", "default": "u1", "choices": ["u1", "u2"],
+    "label": {"hi": "User id", "en": "User id"}, "help": {"hi": "Jiska cart total nikalna hai", "en": "Whose cart total to compute"}}
+  ],
+  "summary": {"hi": "Ek hi kaam (cart total + tax) do tareeke se: fixed chain (1 LLM call) aur tool-using agent (kai calls).", "en": "The same task (cart total + tax) done two ways: a fixed chain (1 LLM call) and a tool-using agent (several calls)."},
+  "watch": {
+   "hi": ["Chain mein raasta code decide karta hai: seedha ek LLM call", "Agent mein LLM khud tools chunta hai: kai steps", "Dono ke LLM calls ginti karo"],
+   "en": ["In the chain, code decides the path: a single LLM call", "In the agent, the LLM picks tools itself: several steps", "Compare the number of LLM calls"]
+  },
+  "explain": {
+   "hi": {"title": "Workflow vs agent: same jawab, alag control", "flow": ["run_as_chain", "run_as_agent", "compare"], "lines": ["spectrum_demo.py ka run_as_chain data pehle se fetch karke ek LLM call karta hai.", "run_as_agent LLM ko tools deta hai; LLM decide karta hai kab kya chalana hai.", "Jitni autonomy, utne zyada calls aur unpredictability: isi se architecture chuna jaata hai."]},
+   "en": {"title": "Workflow vs agent: same answer, different control", "flow": ["run_as_chain", "run_as_agent", "compare"], "lines": ["run_as_chain in spectrum_demo.py fetches the data up front and makes one LLM call.", "run_as_agent gives the LLM tools; the LLM decides what to run and when.", "More autonomy means more calls and less predictability: that is how you pick an architecture."]}
+  },
+  "files": ["02-agentic-architectures/00-workflows-vs-agents/spectrum_demo.py", "02-agentic-architectures/00-workflows-vs-agents/main.py"]
+ },
+
+ "02-agentic-architectures/01-prompt-chaining": {
+  "inputs": [
+   {"name": "topic", "kind": "text", "default": "Python async for beginners",
+    "label": {"hi": "Blog topic", "en": "Blog topic"}, "help": {"hi": "Is topic pe blog likha jayega", "en": "The blog will be written on this topic"}},
+   {"name": "tone", "kind": "choice", "arg": "--tone", "default": "friendly", "choices": ["friendly", "formal", "witty"],
+    "label": {"hi": "Tone", "en": "Tone"}, "help": {"hi": "Polish step is tone mein likhega", "en": "The polish step writes in this tone"}}
+  ],
+  "summary": {"hi": "Blog writer chain: outline, gate check, draft, gate check, polish; har step ka output agle ka input.", "en": "A blog-writer chain: outline, gate check, draft, gate check, polish; each step's output feeds the next."},
+  "watch": {
+   "hi": ["Har step ek alag focused LLM call hai", "Gate fail ho to wahi step error feedback ke saath retry hota hai", "End mein polished blog"],
+   "en": ["Each step is a separate, focused LLM call", "If a gate fails, that step retries with the error as feedback", "A polished blog at the end"]
+  },
+  "explain": {
+   "hi": {"title": "Prompt chain ne blog step by step banaya", "flow": ["outline", "gate", "draft", "gate", "polish"], "lines": ["chaining_pipeline.py ka write_blog har step ko alag prompt se chalata hai.", "Beech ke gates code se output check karte hain; fail pe GateError aur retry.", "Bade kaam ko chhote, check hone layak steps mein todna hi prompt chaining hai."]},
+   "en": {"title": "The prompt chain built the blog step by step", "flow": ["outline", "gate", "draft", "gate", "polish"], "lines": ["write_blog in chaining_pipeline.py runs each step with its own prompt.", "Gates in between check the output in code; a failure raises GateError and retries.", "Splitting a big task into small, checkable steps is what prompt chaining is."]}
+  },
+  "files": ["02-agentic-architectures/01-prompt-chaining/chaining_pipeline.py", "02-agentic-architectures/01-prompt-chaining/main.py"]
+ },
+
+ "02-agentic-architectures/02-routing": {
+  "inputs": [
+   {"name": "ticket", "kind": "textarea", "default": "",
+    "label": {"hi": "Support ticket (khaali = sample tickets)", "en": "Support ticket (empty = sample tickets)"}, "help": {"hi": "Khaali chhodo to 5 sample tickets route honge", "en": "Leave empty to route 5 sample tickets"}}
+  ],
+  "summary": {"hi": "Support tickets classify hoke sahi handler (aur sasta ya strong model) tak route hote hain.", "en": "Support tickets get classified and routed to the right handler (and a cheap or strong model)."},
+  "watch": {
+   "hi": ["Router har ticket ka category aur confidence deta hai", "Kam confidence pe escalation", "Easy tickets cheap model, mushkil wale strong model pe"],
+   "en": ["The router returns a category and confidence per ticket", "Low confidence escalates", "Easy tickets go to the cheap model, hard ones to the strong model"]
+  },
+  "explain": {
+   "hi": {"title": "Router ne har ticket ko sahi jagah bheja", "flow": ["classify", "confidence check", "handler + model"], "lines": ["routing_router.py ka handle_ticket pehle rule/LLM router se category nikalta hai.", "Confidence kam ho to escalate, warna specialised handler prompt chalta hai.", "Cheap vs strong model routing se cost bachti hai bina quality khoye."]},
+   "en": {"title": "The router sent each ticket to the right place", "flow": ["classify", "confidence check", "handler + model"], "lines": ["handle_ticket in routing_router.py first gets a category from the rule/LLM router.", "Low confidence escalates; otherwise a specialised handler prompt runs.", "Routing between cheap and strong models saves cost without losing quality."]}
+  },
+  "files": ["02-agentic-architectures/02-routing/routing_router.py", "02-agentic-architectures/02-routing/main.py"]
+ },
+
+ "02-agentic-architectures/03-parallelization": {
+  "inputs": [
+   {"name": "mode", "kind": "choice", "default": "both", "choices": ["review", "moderate", "both"],
+    "label": {"hi": "Demo", "en": "Demo"}, "help": {"hi": "review = sectioning (3 reviewers), moderate = voting", "en": "review = sectioning (3 reviewers), moderate = voting"}}
+  ],
+  "summary": {"hi": "Sectioning (code review ke 3 aspects ek saath) aur voting (5 moderators ka majority) dono patterns.", "en": "Both patterns: sectioning (3 code-review aspects at once) and voting (majority of 5 moderators)."},
+  "watch": {
+   "hi": ["Sectioning: security, performance, style reviewers alag alag", "Voting: 5 votes aur threshold se final decision", "Browser mein threads nahi hote, isliye yahan kaam sequential chalta hai (result wahi)"],
+   "en": ["Sectioning: separate security, performance and style reviewers", "Voting: 5 votes and a threshold decide", "Browsers have no threads, so the work runs sequentially here (same result)"]
+  },
+  "explain": {
+   "hi": {"title": "Parallel patterns: todo ya vote karo", "flow": ["split / sample", "run each", "aggregate"], "lines": ["parallel_sectioning.py kaam ke independent hisse ThreadPool/asyncio se chalata hai aur jodta hai.", "parallel_voting.py ek hi sawaal kai baar poochh ke majority/threshold lagata hai.", "Terminal mein yeh sach mein parallel chalte hain; browser shim ne inhe ek ke baad ek chalaya."]},
+   "en": {"title": "Parallel patterns: split or vote", "flow": ["split / sample", "run each", "aggregate"], "lines": ["parallel_sectioning.py runs independent parts with a ThreadPool/asyncio and merges them.", "parallel_voting.py asks the same question several times and applies a majority/threshold.", "In a terminal these truly run in parallel; the browser shim ran them one after another."]}
+  },
+  "files": ["02-agentic-architectures/03-parallelization/parallel_sectioning.py", "02-agentic-architectures/03-parallelization/parallel_voting.py"]
+ },
+
+ "02-agentic-architectures/04-react": {
+  "inputs": [
+   {"name": "question", "kind": "textarea", "default": "How many times taller is Mount Everest than the Eiffel Tower?",
+    "label": {"hi": "Sawaal", "en": "Question"}, "help": {"hi": "Facts: Everest, Eiffel, Burj Khalifa, India population, light speed", "en": "Known facts: Everest, Eiffel, Burj Khalifa, India population, light speed"}},
+   {"name": "style", "kind": "choice", "arg": "--style", "default": "both", "choices": ["text", "native", "both"],
+    "label": {"hi": "ReAct style", "en": "ReAct style"}, "help": {"hi": "both = dono side by side", "en": "both = side by side"}}
+  ],
+  "summary": {"hi": "ReAct do tareeke se: text Thought/Action/Observation loop aur native tool calling.", "en": "ReAct two ways: a text Thought/Action/Observation loop and native tool calling."},
+  "watch": {
+   "hi": ["Text style mein 'Thought:' aur 'Action:' lines", "Native style mein seedhe tool calls", "Dono ke LLM calls aur tokens compare karo"],
+   "en": ["'Thought:' and 'Action:' lines in the text style", "Direct tool calls in the native style", "Compare LLM calls and tokens of both"]
+  },
+  "explain": {
+   "hi": {"title": "Reason, act, observe: jab tak jawab na mile", "flow": ["Thought", "Action", "Observation", "Answer"], "lines": ["react_textloop.py LLM ka text parse karke tool chalata hai.", "react_native.py agentkit Agent se provider ke structured tool_calls use karta hai.", "Dono mein max_steps guard infinite loop rokta hai."]},
+   "en": {"title": "Reason, act, observe: until there is an answer", "flow": ["Thought", "Action", "Observation", "Answer"], "lines": ["react_textloop.py parses the LLM's text and runs the tool.", "react_native.py uses the provider's structured tool_calls via the agentkit Agent.", "A max_steps guard stops infinite loops in both."]}
+  },
+  "files": ["02-agentic-architectures/04-react/react_textloop.py", "02-agentic-architectures/04-react/react_native.py", "02-agentic-architectures/04-react/react_tools.py"]
+ },
+
+ "02-agentic-architectures/05-plan-and-execute": {
+  "inputs": [
+   {"name": "goal", "kind": "textarea", "default": "Plan a 2-night weekend trip from Delhi. Kasol preferred; if not reachable, pick another city within budget.",
+    "label": {"hi": "Goal", "en": "Goal"}, "help": {"hi": "Planner isse steps mein todega (offline demo apna fixed goal use karta hai)", "en": "The planner splits this into steps (the offline demo uses its fixed goal)"}}
+  ],
+  "summary": {"hi": "Planner pehle poora plan banata hai, executor har step tools se chalata hai, replanner fail pe plan badalta hai.", "en": "A planner writes the whole plan first, an executor runs each step with tools, and a replanner adjusts on failure."},
+  "watch": {
+   "hi": ["Pehle structured plan (steps ki list)", "Har step ka executor run", "Koi step fail ho to replan"],
+   "en": ["First a structured plan (list of steps)", "An executor run per step", "A replan if a step fails"]
+  },
+  "explain": {
+   "hi": {"title": "Pehle socho, phir karo, zarurat pade to plan badlo", "flow": ["plan", "execute step", "replan?", "finish"], "lines": ["planexec_agent.py ka planner llm_json se plan banata hai.", "Har step ek chhota executor Agent planexec_tools.py ke tools se chalata hai.", "Replanner continue/replan/finish decide karta hai; budgets loop ko rokte hain."]},
+   "en": {"title": "Think first, then act, and replan if needed", "flow": ["plan", "execute step", "replan?", "finish"], "lines": ["The planner in planexec_agent.py builds the plan with llm_json.", "Each step runs a small executor Agent with the tools in planexec_tools.py.", "The replanner decides continue/replan/finish; budgets bound the loop."]}
+  },
+  "files": ["02-agentic-architectures/05-plan-and-execute/planexec_agent.py", "02-agentic-architectures/05-plan-and-execute/planexec_tools.py"]
+ },
+
+ "02-agentic-architectures/06-reflection": {
+  "inputs": [
+   {"name": "mode", "kind": "choice", "default": "refine", "choices": ["refine", "reflexion"],
+    "label": {"hi": "Mode", "en": "Mode"}, "help": {"hi": "refine = generate/critique/revise; reflexion = code likho, tests se seekho", "en": "refine = generate/critique/revise; reflexion = write code, learn from tests"}},
+   {"name": "task", "kind": "textarea", "default": "",
+    "label": {"hi": "Task (khaali = demo task)", "en": "Task (empty = demo task)"}, "help": {"hi": "Offline demo apna fixed task use karta hai", "en": "The offline demo uses its fixed task"}}
+  ],
+  "summary": {"hi": "Self-refine (likho, critique karo, sudhaaro) aur Reflexion (tests fail hone se lessons seekho).", "en": "Self-refine (write, critique, revise) and Reflexion (learn lessons from failing tests)."},
+  "watch": {
+   "hi": ["Refine: draft, critique, revised draft", "Reflexion: code sandbox mein tests pe chalta hai", "Fail pe lesson memory mein judta hai aur agla attempt behtar hota hai"],
+   "en": ["Refine: draft, critique, revised draft", "Reflexion: code runs against tests in a sandbox", "On failure a lesson is stored and the next attempt improves"]
+  },
+  "explain": {
+   "hi": {"title": "Agent ne apni galti se seekha", "flow": ["generate", "critique / test", "revise"], "lines": ["reflection_refine.py generate, critique, revise loop chalata hai.", "reflection_reflexion.py code ko reflection_sandbox.py mein tests pe chalata hai aur lessons yaad rakhta hai.", "Browser mein subprocess nahi hota, isliye sandbox yahan isolated exec se chala."]},
+   "en": {"title": "The agent learned from its own mistakes", "flow": ["generate", "critique / test", "revise"], "lines": ["reflection_refine.py runs the generate, critique, revise loop.", "reflection_reflexion.py runs code against tests in reflection_sandbox.py and keeps lessons.", "Browsers have no subprocess, so the sandbox used an isolated exec here."]}
+  },
+  "files": ["02-agentic-architectures/06-reflection/reflection_refine.py", "02-agentic-architectures/06-reflection/reflection_reflexion.py", "02-agentic-architectures/06-reflection/reflection_sandbox.py"]
+ },
+
+ "02-agentic-architectures/07-evaluator-optimizer": {
+  "inputs": [
+   {"name": "brief", "kind": "textarea", "default": null,
+    "label": {"hi": "Brief (khaali = demo brief)", "en": "Brief (empty = demo brief)"}, "help": {"hi": "Launch tweet kis cheez ke baare mein", "en": "What the launch tweet is about"}},
+   {"name": "threshold", "kind": "number", "arg": "--threshold", "default": 8,
+    "label": {"hi": "Pass score (1-10)", "en": "Pass score (1-10)"}, "help": {"hi": "Is score pe loop rukta hai", "en": "The loop stops at this score"}},
+   {"name": "max_iters", "kind": "number", "arg": "--max-iters", "default": 4,
+    "label": {"hi": "Max iterations", "en": "Max iterations"}, "help": {"hi": "Kitni baar sudhaarne ki koshish", "en": "How many improvement rounds"}}
+  ],
+  "summary": {"hi": "Generator tweet likhta hai, evaluator rubric se score deta hai, loop tab tak jab tak score pass na ho.", "en": "A generator writes a tweet, an evaluator scores it with a rubric, looping until it passes."},
+  "watch": {
+   "hi": ["Har round ka score aur feedback", "Pehle code checks, phir LLM judge", "Best attempt rakha jaata hai"],
+   "en": ["Each round's score and feedback", "Code checks first, then the LLM judge", "The best attempt is kept"]
+  },
+  "explain": {
+   "hi": {"title": "Likho, judge karo, sudhaaro", "flow": ["generate", "evaluate", "feedback", "stop?"], "lines": ["evalopt_loop.py ka optimize generator aur evaluator ko loop mein chalata hai.", "Evaluator rubric se score + feedback deta hai; threshold ya max-iters pe ruk jaata hai.", "Best score wala attempt final hota hai."]},
+   "en": {"title": "Write, judge, improve", "flow": ["generate", "evaluate", "feedback", "stop?"], "lines": ["optimize in evalopt_loop.py runs the generator and evaluator in a loop.", "The evaluator returns a rubric score and feedback; it stops at the threshold or max-iters.", "The best-scoring attempt is the final one."]}
+  },
+  "files": ["02-agentic-architectures/07-evaluator-optimizer/evalopt_loop.py", "02-agentic-architectures/07-evaluator-optimizer/main.py"]
+ },
+
+ "02-agentic-architectures/08-orchestrator-workers": {
+  "inputs": [
+   {"name": "goal", "kind": "textarea", "default": null,
+    "label": {"hi": "Goal (khaali = demo goal)", "en": "Goal (empty = demo goal)"}, "help": {"hi": "Orchestrator isse runtime pe subtasks mein todega", "en": "The orchestrator splits this into subtasks at runtime"}}
+  ],
+  "summary": {"hi": "Orchestrator runtime pe subtasks decide karta hai, workers unhe waves mein karte hain, synthesizer jodta hai.", "en": "An orchestrator decides subtasks at runtime, workers do them in waves, and a synthesizer merges them."},
+  "watch": {
+   "hi": ["Orchestrator ka plan (dependencies ke saath)", "Workers dependency waves mein", "Final synthesis"],
+   "en": ["The orchestrator's plan (with dependencies)", "Workers in dependency waves", "The final synthesis"]
+  },
+  "explain": {
+   "hi": {"title": "Boss ne kaam baanta, workers ne kiya", "flow": ["plan subtasks", "waves", "workers", "synthesize"], "lines": ["orchestrator_workers.py ka orchestrate LLM se subtasks plan karta hai (static parallelization se alag).", "waves() dependencies ke hisaab se kaam ke batch banata hai.", "Ek worker fail ho to baaki chalte rahte hain; synthesizer sab jodta hai."]},
+   "en": {"title": "The boss split the work and workers did it", "flow": ["plan subtasks", "waves", "workers", "synthesize"], "lines": ["orchestrate in orchestrator_workers.py plans subtasks with an LLM (unlike static parallelization).", "waves() batches the work by dependencies.", "If one worker fails the rest continue; the synthesizer merges everything."]}
+  },
+  "files": ["02-agentic-architectures/08-orchestrator-workers/orchestrator_workers.py", "02-agentic-architectures/08-orchestrator-workers/main.py"]
+ },
+
+ "02-agentic-architectures/09-rewoo": {
+  "inputs": [
+   {"name": "task", "kind": "textarea", "default": "How many times taller is Mount Everest than the Eiffel Tower, and what is that ratio times the population of Japan in millions?",
+    "label": {"hi": "Task", "en": "Task"}, "help": {"hi": "Planner saare tool calls pehle hi likh dega", "en": "The planner writes all tool calls up front"}},
+   {"name": "compare", "kind": "flag", "arg": "--compare", "default": false,
+    "label": {"hi": "ReAct se compare karo", "en": "Compare with ReAct"}, "help": {"hi": "Wahi task ReAct pe bhi chalao aur calls/tokens dekho", "en": "Also run ReAct on the same task and compare calls/tokens"}}
+  ],
+  "summary": {"hi": "ReWOO: pehle #E1, #E2 placeholders ke saath poora plan, phir bina LLM ke tools chalao, end mein solver.", "en": "ReWOO: a full plan with #E1, #E2 placeholders first, then tools run without the LLM, then a solver."},
+  "watch": {
+   "hi": ["Plan mein #E variables", "Tools beech mein LLM ke bina chalte hain", "--compare pe ReAct se kam LLM calls"],
+   "en": ["#E variables in the plan", "Tools run with no LLM in between", "With --compare, fewer LLM calls than ReAct"]
+  },
+  "explain": {
+   "hi": {"title": "Plan ek baar, tools bina ruke", "flow": ["planner", "workers (#E1, #E2)", "solver"], "lines": ["rewoo_agent.py plan ko strictly parse karta hai aur dependency levels mein tools chalata hai.", "Beech mein LLM nahi bulaya jaata, isliye tokens bachte hain.", "Solver saare evidence se final jawab likhta hai."]},
+   "en": {"title": "Plan once, run tools without stopping", "flow": ["planner", "workers (#E1, #E2)", "solver"], "lines": ["rewoo_agent.py strictly parses the plan and runs tools in dependency levels.", "No LLM call happens in between, which saves tokens.", "The solver writes the final answer from all the evidence."]}
+  },
+  "files": ["02-agentic-architectures/09-rewoo/rewoo_agent.py", "02-agentic-architectures/09-rewoo/rewoo_tools.py"]
+ },
+
+ "02-agentic-architectures/10-tree-of-thoughts": {
+  "inputs": [
+   {"name": "numbers", "kind": "text", "multi": true, "default": "4 9 10 13",
+    "label": {"hi": "Game of 24 ke 4 numbers", "en": "4 numbers for Game of 24"}, "help": {"hi": "Space se alag karo, e.g. 4 9 10 13", "en": "Space separated, e.g. 4 9 10 13"}},
+   {"name": "search", "kind": "choice", "arg": "--search", "default": "bfs", "choices": ["bfs", "dfs"],
+    "label": {"hi": "Search", "en": "Search"}, "help": {"hi": "bfs = beam search, dfs = pruning + backtracking", "en": "bfs = beam search, dfs = pruning + backtracking"}},
+   {"name": "beam", "kind": "number", "arg": "--beam", "default": 3,
+    "label": {"hi": "Beam width", "en": "Beam width"}, "help": {"hi": "Har level pe kitne best thoughts rakhein", "en": "How many best thoughts to keep per level"}}
+  ],
+  "summary": {"hi": "Tree of Thoughts: kai possible steps propose karo, LLM se score karo, best raaste pe aage badho (Game of 24).", "en": "Tree of Thoughts: propose several steps, score them with the LLM, and follow the best paths (Game of 24)."},
+  "watch": {
+   "hi": ["Har level pe proposals aur unke scores", "Beam mein sirf top thoughts bachte hain", "Checker galat arithmetic reject karta hai"],
+   "en": ["Proposals and their scores at each level", "Only the top thoughts survive in the beam", "The checker rejects wrong arithmetic"]
+  },
+  "explain": {
+   "hi": {"title": "Ek raasta nahi, pura ped explore kiya", "flow": ["propose", "evaluate", "keep best", "solution"], "lines": ["tot_search.py ka proposer har state se agle thoughts banata hai, evaluator unhe score karta hai.", "BFS beam ya DFS pruning se search hota hai.", "tot_game24.py Fraction se exact maths check karta hai, taaki LLM ki galat calculation pakdi jaaye."]},
+   "en": {"title": "Explored a whole tree, not one path", "flow": ["propose", "evaluate", "keep best", "solution"], "lines": ["The proposer in tot_search.py generates next thoughts per state, and the evaluator scores them.", "Search runs as a BFS beam or DFS with pruning.", "tot_game24.py checks the maths exactly with Fraction, catching the LLM's wrong calculations."]}
+  },
+  "files": ["02-agentic-architectures/10-tree-of-thoughts/tot_search.py", "02-agentic-architectures/10-tree-of-thoughts/tot_game24.py"]
+ },
+
+ "02-agentic-architectures/11-human-in-the-loop": {
+  "inputs": [
+   {"name": "task", "kind": "textarea", "default": "checkout service is slow, investigate and fix it",
+    "label": {"hi": "Task", "en": "Task"}, "help": {"hi": "Risky tools (scale, restart) pe insaan ki approval chahiye", "en": "Risky tools (scale, restart) need human approval"}}
+  ],
+  "default_stdin": "a\na\na\na\n",
+  "summary": {"hi": "Agent risky tool se pehle rukta hai, insaan approve/edit/reject karta hai, phir aage badhta hai.", "en": "The agent pauses before risky tools, a human approves/edits/rejects, then it continues."},
+  "watch": {
+   "hi": ["Safe tools seedhe chalte hain", "Risky tool pe approval prompt", "Decision audit log mein"],
+   "en": ["Safe tools run directly", "An approval prompt on a risky tool", "The decision lands in the audit log"]
+  },
+  "explain": {
+   "hi": {"title": "Agent ne insaan se poochh ke kaam kiya", "flow": ["plan tool", "risk check", "approval", "run / skip"], "lines": ["hitl_tools.py ka POLICY har tool ka risk level batata hai.", "hitl_agent.py risky call pe ruk ke Decision (approve/edit/reject) leta hai aur checkpoint save karta hai.", "Offline demo mein scripted insaan jawab deta hai; real mode mein yahan pehle se 'a' (approve) diya gaya hai."]},
+   "en": {"title": "The agent asked a human before acting", "flow": ["plan tool", "risk check", "approval", "run / skip"], "lines": ["POLICY in hitl_tools.py gives each tool a risk level.", "hitl_agent.py pauses on a risky call, takes a Decision (approve/edit/reject) and saves a checkpoint.", "The offline demo uses a scripted human; in live mode 'a' (approve) is pre-filled as input here."]}
+  },
+  "files": ["02-agentic-architectures/11-human-in-the-loop/hitl_agent.py", "02-agentic-architectures/11-human-in-the-loop/hitl_tools.py"],
+  "live_note": {"hi": "Real mode mein approval prompts terminal input maangte hain; browser mein unke jawab pehle se 'approve' bhare hote hain.", "en": "In live mode the approval prompts ask for terminal input; in the browser they are pre-answered with 'approve'."}
+ },
+
+ "02-agentic-architectures/12-memory": {
+  "inputs": [
+   {"name": "user", "kind": "text", "arg": "--user", "default": "me",
+    "label": {"hi": "User id", "en": "User id"}, "help": {"hi": "Memory is user ke liye alag rakhi jaati hai", "en": "Memory is kept separately per user"}}
+  ],
+  "default_stdin": "I am vegetarian and I love spicy food.\nWhat should I eat for lunch today?\n",
+  "summary": {"hi": "Personal assistant jo sessions ke beech user ki preferences yaad rakhta hai (short-term + long-term memory).", "en": "A personal assistant that remembers user preferences across sessions (short-term + long-term memory)."},
+  "watch": {
+   "hi": ["Session 1 mein facts 'remember' tool se save", "Session 2 mein wahi facts wapas inject", "Jawab preferences ke hisaab se"],
+   "en": ["Facts saved with the 'remember' tool in session 1", "The same facts injected back in session 2", "Answers follow the preferences"]
+  },
+  "explain": {
+   "hi": {"title": "Assistant ne tumhe yaad rakha", "flow": ["extract facts", "store", "retrieve", "answer"], "lines": ["memory_extraction.py llm_json se facts nikalta hai; memory_long_term.py unhe store karta hai.", "Agle session mein memory_assistant.py relevant facts prompt mein daalta hai.", "memory_short_term.py conversation ko window/summary se chhota rakhta hai."]},
+   "en": {"title": "The assistant remembered you", "flow": ["extract facts", "store", "retrieve", "answer"], "lines": ["memory_extraction.py extracts facts with llm_json; memory_long_term.py stores them.", "In the next session memory_assistant.py puts the relevant facts into the prompt.", "memory_short_term.py keeps the conversation short with a window/summary."]}
+  },
+  "files": ["02-agentic-architectures/12-memory/memory_assistant.py", "02-agentic-architectures/12-memory/memory_long_term.py", "02-agentic-architectures/12-memory/memory_extraction.py"],
+  "live_note": {"hi": "Real mode ek chat REPL hai; browser mein do sample messages pehle se input ke roop mein bheje jaate hain.", "en": "Live mode is a chat REPL; in the browser two sample messages are sent as pre-filled input."}
+ }
+}
