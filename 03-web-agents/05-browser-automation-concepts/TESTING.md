@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](TESTING.en.md)
+
 # 05 · Browser Automation: test aur tinker kaise karein
 
 Yeh project **concept-first** hai. Isme ek fake browser hai, isliye Playwright install karne ki zaroorat nahi.

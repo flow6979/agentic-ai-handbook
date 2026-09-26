@@ -1,15 +1,15 @@
-**Language:** Hinglish · [English](CONCEPTS.en.md)
+**Language:** [Hinglish](CONCEPTS.md) · English
 
-# agentkit: poore repo ka chhota sa engine
+# agentkit: the small engine behind the whole repo
 
-Is repo ka har project `agentkit` pe bana hai. Yeh ek chhota (~600 lines), **framework-free** toolkit hai. Iska maksad hai ki LangChain/CrewAI jaisa "magic" beech mein na aaye, aur har concept ka asli code saaf dikhe.
+Every project in this repo is built on `agentkit`. It is a small (~600 lines), **framework-free** toolkit. The point is to keep LangChain/CrewAI-style "magic" out of the way, so the real code behind each concept stays visible.
 
-## 1. Agent asal mein hai kya?
+## 1. What actually is an agent?
 
 ```
- Chatbot   : user ──► LLM ──► answer                  (ek shot, koi action nahi)
- Workflow  : user ──► step1 ──► step2 ──► answer      (raasta CODE ne fix kiya)
- Agent     : user ──► LLM ⇄ tools (loop) ──► answer   (raasta LLM khud decide karta hai)
+ Chatbot   : user ──► LLM ──► answer                  (one shot, no actions)
+ Workflow  : user ──► step1 ──► step2 ──► answer      (CODE fixed the path)
+ Agent     : user ──► LLM ⇄ tools (loop) ──► answer   (the LLM decides the path itself)
 ```
 
 **Agent = LLM + Tools + Loop + (Memory) + (Guardrails)**
@@ -18,21 +18,21 @@ Is repo ka har project `agentkit` pe bana hai. Yeh ek chhota (~600 lines), **fra
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│  Tumhara project (support agent, RAG bot, A2A server...)  │
+│  Your project (support agent, RAG bot, A2A server...)     │
 ├──────────────────────────────────────────────────────────┤
 │  agent.py        Agent loop (max_steps, tool errors,     │
 │                  human approval hook)                    │
 │  tools.py        @tool: Python function ──► JSON schema  │
 │  structured.py   llm_json: validated Pydantic output     │
-│  embeddings.py   text ──► vector (RAG ke liye)           │
-│  tracing.py      har step ka log (console + JSONL)       │
+│  embeddings.py   text ──► vector (for RAG)               │
+│  tracing.py      log of every step (console + JSONL)     │
 ├──────────────────────────────────────────────────────────┤
 │  llm/            PROVIDER ABSTRACTION                    │
 │   base.py          LLM.chat(messages, tools) interface   │
 │   types.py         Message, ToolCall, ToolSpec, Usage    │
 │   openai_compat.py OpenAI, Groq, Gemini, Ollama,         │
 │                    OpenRouter, DeepSeek, Together         │
-│   anthropic.py     Claude (alag wire format)             │
+│   anthropic.py     Claude (different wire format)        │
 │   resilient.py     RetryingLLM, FallbackLLM              │
 │   scripted.py      ScriptedLLM (tests, offline demos)    │
 │   factory.py       get_llm("provider:model")             │
@@ -42,9 +42,9 @@ Is repo ka har project `agentkit` pe bana hai. Yeh ek chhota (~600 lines), **fra
    OpenAI / Anthropic / Gemini / Groq / Ollama (local) ...
 ```
 
-## 3. Multi-LLM kaise possible hai? (Adapter pattern)
+## 3. How is multi-LLM possible? (The adapter pattern)
 
-Har provider ka format alag hai. Hum ek **neutral format** (`Message`, `ToolCall`) mein code likhte hain, aur har adapter use translate karta hai:
+Every provider has a different format. We write code in one **neutral format** (`Message`, `ToolCall`), and each adapter translates it:
 
 ```
            neutral Message list
@@ -61,19 +61,19 @@ Har provider ka format alag hai. Hum ek **neutral format** (`Message`, `ToolCall
    Gemini/Ollama
 ```
 
-Kuch real differences jo adapters sambhaalte hain:
+Some real differences the adapters handle:
 
-| Cheez | OpenAI format | Anthropic format |
+| Thing | OpenAI format | Anthropic format |
 |---|---|---|
-| System prompt | `messages` mein `role: system` | alag `system` field |
-| Tool call | `message.tool_calls[].function.arguments` (JSON **string**) | `content[]` mein `tool_use` block (`input` = object) |
-| Tool result | `role: tool` + `tool_call_id` | `role: user` ke andar `tool_result` block |
-| JSON mode | `response_format: json_object` | flag nahi hai, instruction se karwate hain |
+| System prompt | `role: system` inside `messages` | separate `system` field |
+| Tool call | `message.tool_calls[].function.arguments` (JSON **string**) | a `tool_use` block in `content[]` (`input` = object) |
+| Tool result | `role: tool` + `tool_call_id` | a `tool_result` block inside `role: user` |
+| JSON mode | `response_format: json_object` | no flag; done through instructions |
 | Tool schema key | `parameters` | `input_schema` |
 
-Model badalna = sirf `.env` mein `LLM_MODEL` change karna, code nahi.
+Changing the model = only changing `LLM_MODEL` in `.env`, not the code.
 
-## 4. Agent loop (agent.py)
+## 4. The agent loop (agent.py)
 
 ```
  messages = [system, ...history, user]
@@ -83,37 +83,37 @@ Model badalna = sirf `.env` mein `LLM_MODEL` change karna, code nahi.
  │ llm.chat()   │◄──────────────────────────┐
  └──────┬───────┘                           │
         │                                   │
-   tool_calls hain?                         │
+   any tool_calls?                          │
     ┌───┴────┐                              │
-   Nahi     Haan                            │
+   No       Yes                             │
     │        │                              │
     ▼        ▼                              │
-  return   har call ke liye:                │
-  answer    • tool exist karta hai? (nahi → ERROR msg)
-            • args valid JSON?     (nahi → ERROR msg)
+  return   for each call:                   │
+  answer    • does the tool exist? (no → ERROR msg)
+            • are the args valid JSON? (no → ERROR msg)
             • approve() hook?      (reject → ERROR msg)
             • tool.run()           (exception → ERROR msg)
             • result → Message.tool ─────────┘
-                 (step > max_steps → ruk jao)
+                 (step > max_steps → stop)
 ```
 
-**Key idea:** tool ki errors ko crash nahi hone dete, balki model ko **text** mein wapas bhejte hain. Model padh ke khud sudhaarta hai (dusre args deta hai ya dusra tool chunta hai). Isse agent kaafi robust ho jata hai.
+**Key idea:** tool errors are not allowed to crash anything; instead they go back to the model as **text**. The model reads them and fixes things itself (passes different args or picks a different tool). This makes the agent quite robust.
 
-## 5. @tool: function se schema
+## 5. @tool: from function to schema
 
 ```python
 @tool
 def get_weather(city: str, unit: Literal["c", "f"] = "c") -> str:
     """Get current weather for a city."""
 ```
-yeh automatically ban jata hai:
+automatically becomes:
 ```json
 {"name": "get_weather", "description": "Get current weather for a city.",
  "parameters": {"type": "object",
    "properties": {"city": {"type": "string"}, "unit": {"type": "string", "enum": ["c","f"]}},
    "required": ["city"]}}
 ```
-LLM sirf yeh schema dekh ke decide karta hai ki tool kab aur kaise chalana hai. Isliye **achha naam aur docstring = achha tool use**.
+The LLM decides when and how to call the tool just by looking at this schema. That is why **a good name and docstring = good tool use**.
 
 ## 6. Resilience
 
@@ -121,29 +121,29 @@ LLM sirf yeh schema dekh ke decide karta hai ki tool kab aur kaise chalana hai. 
 get_llm("groq:llama-3.3-70b-versatile,ollama:llama3.1")
 
  FallbackLLM
-   ├── RetryingLLM(groq)    429/5xx/timeout? → 1s, 2s, 4s backoff → phir bhi fail?
-   └── RetryingLLM(ollama)  ← yahan gir jao
+   ├── RetryingLLM(groq)    429/5xx/timeout? → 1s, 2s, 4s backoff → still failing?
+   └── RetryingLLM(ollama)  ← fall back here
 ```
 
 - **Retryable:** 429 (rate limit), 5xx, network timeout
-- **Non-retryable:** 400 (bad request), 401 (bad key). Inhe retry karna bekaar hai, seedha fail ya fallback.
+- **Non-retryable:** 400 (bad request), 401 (bad key). Retrying these is pointless; fail straight away or fall back.
 
-## 7. ScriptedLLM: agents ko test kaise karein
+## 7. ScriptedLLM: how to test agents
 
-LLM non-deterministic hai aur paise lagte hain, isliye unit tests mein **fake LLM** use karte hain:
+LLMs are non-deterministic and cost money, so unit tests use a **fake LLM**:
 
 ```python
 llm = ScriptedLLM([tool_response(call("add", a=2, b=3)), "Answer is 5"])
 ```
 
-Isse hum *apna* code test karte hain: loop, parsing, routing aur error handling. LLM ki quality alag se **evals** (live runs, golden datasets) se check hoti hai; woh `01-production-agent` mein dekhenge.
+With this we test *our* code: the loop, parsing, routing and error handling. The LLM's quality is checked separately with **evals** (live runs, golden datasets); we will see that in `01-production-agent`.
 
 ## 8. structured.py: validated JSON
 
 ```
 prompt + JSON schema ──► LLM ──► extract_json ──► Pydantic validate
                            ▲                            │ fail
-                           └──── "yeh galat tha: <error>" ◄┘  (self-correction retry)
+                           └──── "this was wrong: <error>" ◄┘  (self-correction retry)
 ```
 
-Jahan bhi LLM ka output **code** consume karta hai (router decision, plan, score), wahan free text ki jagah yahi use hota hai.
+Wherever **code** consumes the LLM's output (a router decision, a plan, a score), this is used instead of free text.

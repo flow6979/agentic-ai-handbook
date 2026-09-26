@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](TESTING.en.md)
+
 # Support Desk: Kaise chalayein, test karein aur tinker karein
 
 Saari commands **repo root** (`agentic-ai-handbook/`) se chalao.

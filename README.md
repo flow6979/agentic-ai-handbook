@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](README.en.md)
+
 # Agentic AI Handbook: zero se production-ready agents tak
 
 Hinglish mein, code ke saath, **kisi bhi LLM** (OpenAI, Claude, Gemini, Groq, Ollama local...) pe chalne wale agents seekhne ka repo.
@@ -7,6 +9,8 @@ Har project mein do docs hain:
 - **`TESTING.md`**: kaise chalayein, kaise verify karein ki sahi chal raha hai, aur "Tinker karo" exercises
 
 Har project bina API key ke bhi chalta hai (`--offline` mode aur offline tests), taaki flow pehle samajh aa jaye.
+
+Repo ka har doc do bhashaon mein hai (Hinglish aur English). Har file ke top pe language switcher hai.
 
 ## Roadmap
 

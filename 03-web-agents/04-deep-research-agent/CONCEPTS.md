@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # 04 · Deep Research Agent: plan, search, read, notes, cited report
 
 ## Concept

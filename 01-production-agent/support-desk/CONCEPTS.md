@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # Production-ready, LLM-agnostic Agent: Concepts (Hinglish)
 
 Is project mein hum **ShopKart** (ek fake e-commerce store) ke liye customer-support agent banate hain.

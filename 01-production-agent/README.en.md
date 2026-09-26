@@ -1,11 +1,11 @@
-**Language:** Hinglish · [English](README.en.md)
+**Language:** [Hinglish](README.md) · English
 
 # 01 · Production-ready, LLM-agnostic Agent
 
-Is section mein hum ek aisa agent banate hain jo **kisi bhi LLM** (OpenAI, Claude, Gemini, Groq, Ollama...) pe chale
-aur **production** ki asli problems handle kare: security, cost, failures, memory, testing, deployment.
-Poore repo ka **entry point** yahi hai. `support-desk/CONCEPTS.md` mein `common/agentkit` core ka walkthrough bhi hai
-(agent loop, tool schemas, provider adapters, retry/fallback). Wahi core baaki saare sections use karte hain.
+In this section we build an agent that runs on **any LLM** (OpenAI, Claude, Gemini, Groq, Ollama...)
+and handles the real problems of **production**: security, cost, failures, memory, testing, deployment.
+This is the **entry point** of the whole repo. `support-desk/CONCEPTS.en.md` also contains a walkthrough of the `common/agentkit` core
+(agent loop, tool schemas, provider adapters, retry/fallback). Every other section uses that same core.
 
 ## Map
 
@@ -26,16 +26,16 @@ Poore repo ka **entry point** yahi hai. `support-desk/CONCEPTS.md` mein `common/
 
 ## Projects
 
-| Project | Kya seekhoge |
+| Project | What you will learn |
 |---|---|
 | [`support-desk/`](support-desk/) | E-commerce support agent: SQLite-backed tools, refund approval policy, session memory with summarization, guardrails, rate limit, timeouts, graceful degradation, cost tracking, evals, CLI/REPL/HTTP/batch/SDK modes, Dockerfile |
 
 ## Recommended order
 
-1. `support-desk/CONCEPTS.md` sections 1-3: agent kya hai, agent loop, agentkit core (provider abstraction).
-2. `support-desk/TESTING.md` step 1: `--offline` demo chalao, trace padho.
-3. CONCEPTS sections 4-5: production architecture, ek ek concept. Saath mein file kholo (section 9 ki table).
-4. `.env` mein real LLM daalo, REPL mein refund/approval try karo, phir `eval --live`.
-5. "Tinker karo" exercises.
+1. `support-desk/CONCEPTS.en.md` sections 1-3: what an agent is, the agent loop, the agentkit core (provider abstraction).
+2. `support-desk/TESTING.en.md` step 1: run the `--offline` demo and read the trace.
+3. CONCEPTS sections 4-5: the production architecture, one concept at a time. Keep the matching file open alongside (see the table in section 9).
+4. Put a real LLM in `.env`, try refunds/approval in the REPL, then run `eval --live`.
+5. The "Tinker" exercises.
 
-Uske baad `02-agentic-architectures/` pe jao: wahan agent loop ke alag-alag "shapes" (ReAct, plan-execute, reflection...) hain.
+After that, move on to `02-agentic-architectures/`: it covers the different "shapes" of the agent loop (ReAct, plan-execute, reflection...).

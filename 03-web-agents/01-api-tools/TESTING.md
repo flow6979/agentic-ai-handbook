@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](TESTING.en.md)
+
 # 01 · API Tools: test aur tinker kaise karein
 
 ## Setup (ek baar)

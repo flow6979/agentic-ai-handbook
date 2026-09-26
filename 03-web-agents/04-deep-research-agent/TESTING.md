@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](TESTING.en.md)
+
 # 04 · Deep Research Agent: test aur tinker kaise karein
 
 ## 1. Offline demo

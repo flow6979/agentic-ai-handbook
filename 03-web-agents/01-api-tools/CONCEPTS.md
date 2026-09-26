@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](CONCEPTS.en.md)
+
 # 01 · API Tools: public APIs ko agent ke tools banana
 
 ## Concept, bilkul shuru se

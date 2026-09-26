@@ -1,3 +1,5 @@
+**Language:** Hinglish · [English](README.en.md)
+
 # 03 · Web Agents: agent internet se data kaise laaye
 
 LLM ki knowledge ek **training cutoff** pe ruk jaati hai, aur use tumhare live data ka pata nahi hota. Internet se data laane ke liye agent ko **tools** dene padte hain. Is section mein hum internet access ke har level ko chhote projects se samjhenge.
