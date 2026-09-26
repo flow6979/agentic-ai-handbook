@@ -45,24 +45,30 @@ def _load_dotenv() -> None:
         pass
 
 
-def _single(spec: str) -> LLM:
+def _single(spec: str, api_key: str | None = None) -> LLM:
     if ":" not in spec:
         raise ValueError(f"LLM spec must be 'provider:model', got {spec!r}")
     provider, model = spec.split(":", 1)
     provider = provider.strip().lower()
     if provider == "anthropic":
-        return AnthropicLLM(model, os.getenv("ANTHROPIC_API_KEY"))
+        return AnthropicLLM(model, api_key or os.getenv("ANTHROPIC_API_KEY"))
     if provider in OPENAI_COMPAT:
         base_url, key_env = OPENAI_COMPAT[provider]
-        key = os.getenv(key_env) if key_env else None
+        key = api_key or (os.getenv(key_env) if key_env else None)
         if key_env and not key:
             raise ValueError(f"{provider} needs {key_env} in env / .env")
         return OpenAICompatLLM(model, base_url, key, provider=provider)
     raise ValueError(f"Unknown provider {provider!r}. Known: anthropic, {', '.join(OPENAI_COMPAT)}")
 
 
-def get_llm(spec: str | None = None, *, retries: int = 3) -> LLM:
+def get_llm(spec: str | None = None, *, retries: int = 3, api_keys: dict[str, str] | None = None) -> LLM:
+    """`api_keys` = {"groq": "...", "gemini": "..."}: env ki jagah yeh keys use hongi.
+
+    Browser UI (agent-lab) isi se har request pe user ki key deta hai; key kahin save nahi hoti.
+    """
     _load_dotenv()
     spec = spec or os.getenv("LLM_MODEL") or DEFAULT_MODEL
-    chain = [RetryingLLM(_single(s.strip()), max_retries=retries) for s in spec.split(",") if s.strip()]
+    keys = {k.lower(): v for k, v in (api_keys or {}).items() if v}
+    parts = [s.strip() for s in spec.split(",") if s.strip()]
+    chain = [RetryingLLM(_single(p, keys.get(p.split(":", 1)[0].lower())), max_retries=retries) for p in parts]
     return chain[0] if len(chain) == 1 else FallbackLLM(chain)

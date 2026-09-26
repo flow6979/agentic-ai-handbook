@@ -10,22 +10,26 @@ import json
 import os
 import sys
 import time
-from typing import Any
+from typing import Any, Callable
 
 COLORS = {"llm": "\033[36m", "tool": "\033[33m", "result": "\033[32m", "error": "\033[31m", "info": "\033[35m"}
 RESET = "\033[0m"
 
 
 class Tracer:
-    def __init__(self, verbose: bool | None = None, jsonl_path: str | None = None, name: str = "agent"):
+    def __init__(self, verbose: bool | None = None, jsonl_path: str | None = None, name: str = "agent",
+                 on_event: Callable[[dict[str, Any]], None] | None = None):
         self.verbose = verbose if verbose is not None else os.getenv("AGENT_VERBOSE", "1") != "0"
         self.jsonl_path = jsonl_path or os.getenv("AGENT_TRACE_FILE")
         self.name = name
+        self.on_event = on_event  # live listener, e.g. browser UI ko har step turant bhejna
         self.events: list[dict[str, Any]] = []
 
     def event(self, kind: str, message: str, **data: Any) -> None:
         ev = {"ts": time.time(), "agent": self.name, "kind": kind, "message": message, **data}
         self.events.append(ev)
+        if self.on_event:
+            self.on_event(ev)
         if self.verbose:
             color = COLORS.get(kind, "")
             short = message if len(message) < 400 else message[:400] + "..."
@@ -36,8 +40,11 @@ class Tracer:
 
 
 class NullTracer(Tracer):
-    def __init__(self, name: str = "agent"):
-        super().__init__(verbose=False, jsonl_path=None, name=name)
+    def __init__(self, name: str = "agent", on_event: Callable[[dict[str, Any]], None] | None = None):
+        super().__init__(verbose=False, jsonl_path=None, name=name, on_event=on_event)
 
     def event(self, kind: str, message: str, **data: Any) -> None:
-        self.events.append({"kind": kind, "message": message, **data})
+        ev = {"kind": kind, "message": message, **data}
+        self.events.append(ev)
+        if self.on_event:
+            self.on_event(ev)
