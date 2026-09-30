@@ -19,7 +19,7 @@ Output mein "Agents used" dekho: kaunsa sub-task kis vendor ke agent ne kiya.
 ## 2. Real LLMs, alag providers
 ```bash
 # .env mein dono providers ki keys daalo
-LLM_MODEL_A=groq:llama-3.3-70b-versatile LLM_MODEL_B=gemini:gemini-2.5-flash python main.py
+LLM_MODEL_A=groq:llama-3.3-70b-versatile LLM_MODEL_B=gemini:gemini-3.8-flash python main.py
 ```
 Yeh dono servers ko isi process mein real ports **9001** aur **9002** pe start karta hai, phir orchestrate karta hai.
 Chalte waqt doosre terminal se check kar sakte ho:

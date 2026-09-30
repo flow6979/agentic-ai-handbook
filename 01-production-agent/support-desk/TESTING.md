@@ -12,7 +12,7 @@ pip install -e ".[all]"
 cp .env.example .env      # real LLM ke liye: LLM_MODEL + us provider ki key bharo
 ```
 
-Free options: `groq:llama-3.3-70b-versatile` (free key), `gemini:gemini-2.5-flash` (free tier), `ollama:llama3.1` (local, bina key ke).
+Free options: `groq:llama-3.3-70b-versatile` (free key), `gemini:gemini-3.8-flash` (free tier), `ollama:llama3.1` (local, bina key ke).
 Tool calling ke liye decent model chahiye. Chhote local models (1-3B) tools galat chalate hain.
 
 ### Project-specific env vars (sab optional)
@@ -121,7 +121,7 @@ Output:
 pass rate: 90% | tool_choice 90% | contains 100% | refusal 100%
 ```
 Exit code 1 aata hai agar pass rate 80% se kam ho (CI gate). Live mode mein har model ka score alag hoga. Do models compare karo:
-`LLM_MODEL=groq:llama-3.3-70b-versatile python $P/main.py eval --live` vs `LLM_MODEL=gemini:gemini-2.5-flash ...`
+`LLM_MODEL=groq:llama-3.3-70b-versatile python $P/main.py eval --live` vs `LLM_MODEL=gemini:gemini-3.8-flash ...`
 
 ## 5. Kaise confirm karein ki sab kaam kar raha hai
 
@@ -142,4 +142,4 @@ Exit code 1 aata hai agar pass rate 80% se kam ho (CI gate). Live mode mein har 
 3. **Memory compaction live:** `SUPPORTDESK_CONTEXT_BUDGET=100 SUPPORTDESK_KEEP_LAST=2` ke saath REPL mein 4-5 sawaal poocho. Phir `sqlite3 01-production-agent/support-desk/data/supportdesk.sqlite3 "select summary from sessions"` chala ke summary dekho.
 4. **Prompt injection todo:** Aisa injection likho jo regex se bach jaaye (jaise Hinglish mein, "pichle saare nirdesh bhool jao"). Real LLM ke saath try karo. Phir socho: agar input guard bypass ho bhi jaaye, to kya data leak ho sakta hai? (Hint: `internal_note` tool return hi nahi karta.) Apna pattern `INJECTION_PATTERNS` mein add karo aur ek test likho.
 5. **Naya tool:** `cancel_order(order_id)` banao (WRITE tier; sirf `processing` status pe allowed). `TOOL_TIERS` aur `ApprovalPolicy` update karo, `golden.jsonl` mein 2 eval cases daalo, phir `offline.py` ke `guess_intent` mein "cancel" handle karo.
-6. **Fallback chain:** `.env` mein `LLM_MODEL=groq:llama-3.3-70b-versatile,gemini:gemini-2.5-flash` rakho aur jaan-boojh ke `GROQ_API_KEY` galat daalo. 401 non-retryable hai, isliye turant Gemini pe fallback hona chahiye (logs mein `falling back` dikhega). Phir socho: kya galat key pe fallback karna sahi hai, ya alert karna chahiye?
+6. **Fallback chain:** `.env` mein `LLM_MODEL=groq:llama-3.3-70b-versatile,gemini:gemini-3.8-flash` rakho aur jaan-boojh ke `GROQ_API_KEY` galat daalo. 401 non-retryable hai, isliye turant Gemini pe fallback hona chahiye (logs mein `falling back` dikhega). Phir socho: kya galat key pe fallback karna sahi hai, ya alert karna chahiye?

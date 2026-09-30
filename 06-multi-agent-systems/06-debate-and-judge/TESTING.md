@@ -15,12 +15,12 @@ python $M moa "What is the capital of France?" --offline
 # real LLM
 python $M debate "AI will create more jobs than it destroys" --rounds 3
 # multi-provider jury
-LLM_MODEL_JUDGE1=groq:llama-3.3-70b-versatile LLM_MODEL_JUDGE2=gemini:gemini-2.5-flash \
+LLM_MODEL_JUDGE1=groq:llama-3.3-70b-versatile LLM_MODEL_JUDGE2=gemini:gemini-3.8-flash \
 LLM_MODEL_JUDGE3=openai:gpt-4o-mini python $M debate "Tabs are better than spaces" --judges 3
 # self-consistency on a tricky question
 python $M consistency "A bat and ball cost 110 rupees. The bat costs 100 more than the ball. Ball price?" --samples 7
 # MoA with different proposers
-LLM_MODEL_PROPOSER1=groq:llama-3.3-70b-versatile LLM_MODEL_PROPOSER2=gemini:gemini-2.5-flash \
+LLM_MODEL_PROPOSER1=groq:llama-3.3-70b-versatile LLM_MODEL_PROPOSER2=gemini:gemini-3.8-flash \
 LLM_MODEL_AGGREGATOR=anthropic:claude-sonnet-5 python $M moa "Explain CAP theorem in 3 lines"
 ```
 

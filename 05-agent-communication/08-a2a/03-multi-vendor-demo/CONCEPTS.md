@@ -38,7 +38,7 @@ gunjaish kam hoti hai. Text sirf fallback hai.
 ## Multi-LLM-provider design
 ```
 LLM_MODEL_A = groq:llama-3.3-70b-versatile    -> Travel agent ke andar (tool calling)
-LLM_MODEL_B = gemini:gemini-2.5-flash         -> Orchestrator (routing + final summary)
+LLM_MODEL_B = gemini:gemini-3.8-flash         -> Orchestrator (routing + final summary)
 (Packing agent: koi LLM nahi)
 ```
 Kyun alag providers?

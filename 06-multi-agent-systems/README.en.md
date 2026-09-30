@@ -70,7 +70,7 @@ Every project has `llm_for(role)`: it first checks the `LLM_MODEL_<ROLE>` env va
 ```bash
 LLM_MODEL=groq:llama-3.1-8b-instant            # all workers: cheap + fast
 LLM_MODEL_SUPERVISOR=anthropic:claude-sonnet-5 # routing/judging: strong
-LLM_MODEL_JUDGE2=gemini:gemini-2.5-flash       # a different provider in the jury = less bias
+LLM_MODEL_JUDGE2=gemini:gemini-3.8-flash       # a different provider in the jury = less bias
 ```
 
 Rule of thumb: **use a strong model for planning, routing and judging; use a cheap model for bulk generation.**

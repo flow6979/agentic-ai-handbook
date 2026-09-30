@@ -70,7 +70,7 @@ Har project mein `llm_for(role)` hai: pehle `LLM_MODEL_<ROLE>` env dekhta hai, n
 ```bash
 LLM_MODEL=groq:llama-3.1-8b-instant            # sab workers: sasta + fast
 LLM_MODEL_SUPERVISOR=anthropic:claude-sonnet-5 # routing/judging: strong
-LLM_MODEL_JUDGE2=gemini:gemini-2.5-flash       # jury mein alag provider = kam bias
+LLM_MODEL_JUDGE2=gemini:gemini-3.8-flash       # jury mein alag provider = kam bias
 ```
 
 Rule of thumb: **planning, routing aur judging ke liye strong model; bulk generation ke liye sasta model.**

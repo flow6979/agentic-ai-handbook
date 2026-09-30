@@ -19,7 +19,7 @@ Look at "Agents used" in the output: which sub-task was done by which vendor's a
 ## 2. Real LLMs, different providers
 ```bash
 # put keys for both providers in .env
-LLM_MODEL_A=groq:llama-3.3-70b-versatile LLM_MODEL_B=gemini:gemini-2.5-flash python main.py
+LLM_MODEL_A=groq:llama-3.3-70b-versatile LLM_MODEL_B=gemini:gemini-3.8-flash python main.py
 ```
 This starts both servers in this same process on real ports **9001** and **9002**, then orchestrates.
 While it runs you can check from another terminal:

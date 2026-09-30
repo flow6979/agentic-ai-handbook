@@ -38,7 +38,7 @@ misunderstanding. Text is only a fallback.
 ## Multi-LLM-provider design
 ```
 LLM_MODEL_A = groq:llama-3.3-70b-versatile    -> inside the Travel agent (tool calling)
-LLM_MODEL_B = gemini:gemini-2.5-flash         -> Orchestrator (routing + final summary)
+LLM_MODEL_B = gemini:gemini-3.8-flash         -> Orchestrator (routing + final summary)
 (Packing agent: no LLM)
 ```
 Why different providers?

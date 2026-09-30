@@ -30,7 +30,7 @@ python main.py --prompt summarize_notes topic=todo   # MCP prompt (user-controll
 Model badal ke compare karo:
 ```bash
 LLM_MODEL=ollama:llama3.1 python main.py "..."
-LLM_MODEL=gemini:gemini-2.5-flash python main.py "..."
+LLM_MODEL=gemini:gemini-3.8-flash python main.py "..."
 ```
 Chhote models kabhi galat tool naam ya galat args dete hain. Dekho agent loop ke `ERROR:` messages
 se woh kaise recover karta hai.

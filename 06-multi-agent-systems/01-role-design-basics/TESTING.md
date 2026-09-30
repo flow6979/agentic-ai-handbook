@@ -23,7 +23,7 @@ Expected: pehle dono roles ke generated system prompts print honge. Phir `[Write
 ```bash
 python 06-multi-agent-systems/01-role-design-basics/main.py "What is Docker?" --show-prompts
 # alag models per role:
-LLM_MODEL_WRITER=groq:llama-3.1-8b-instant LLM_MODEL_EDITOR=gemini:gemini-2.5-flash \
+LLM_MODEL_WRITER=groq:llama-3.1-8b-instant LLM_MODEL_EDITOR=gemini:gemini-3.8-flash \
   python 06-multi-agent-systems/01-role-design-basics/main.py "What is Kubernetes?"
 ```
 

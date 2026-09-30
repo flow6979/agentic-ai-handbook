@@ -30,7 +30,7 @@ python main.py --prompt summarize_notes topic=todo   # a task from an MCP prompt
 Switch models and compare:
 ```bash
 LLM_MODEL=ollama:llama3.1 python main.py "..."
-LLM_MODEL=gemini:gemini-2.5-flash python main.py "..."
+LLM_MODEL=gemini:gemini-3.8-flash python main.py "..."
 ```
 Small models sometimes give a wrong tool name or wrong args. Watch how the agent loop recovers from the
 `ERROR:` messages.

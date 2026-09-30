@@ -61,7 +61,7 @@ pip install -e ".[all]"
 cp .env.example .env
 # pick one provider in .env, e.g.
 #   LLM_MODEL=groq:llama-3.3-70b-versatile   + GROQ_API_KEY   (free tier)
-#   LLM_MODEL=gemini:gemini-2.5-flash        + GEMINI_API_KEY (free tier)
+#   LLM_MODEL=gemini:gemini-3.8-flash        + GEMINI_API_KEY (free tier)
 #   LLM_MODEL=ollama:llama3.1                (local, free, `ollama pull llama3.1`)
 ```
 
@@ -83,7 +83,7 @@ python 02-agentic-architectures/04-react/main.py             # real LLM (from .e
 ```
 LLM_MODEL=openai:gpt-4o-mini
 LLM_MODEL=anthropic:claude-sonnet-5
-LLM_MODEL=gemini:gemini-2.5-flash
+LLM_MODEL=gemini:gemini-3.8-flash
 LLM_MODEL=groq:llama-3.3-70b-versatile,ollama:llama3.1    # comma = fallback chain
 LLM_MODEL_WRITER=anthropic:claude-sonnet-5                # multi-agent: per-role model
 ```

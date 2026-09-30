@@ -1,6 +1,6 @@
 """LLM banana: config -> get_llm() -> (retry + fallback chain). Provider ka naam kahin hardcode nahi.
 
-    LLM_MODEL=groq:llama-3.3-70b-versatile,gemini:gemini-2.5-flash,ollama:llama3.1
+    LLM_MODEL=groq:llama-3.3-70b-versatile,gemini:gemini-3.8-flash,ollama:llama3.1
              └─ primary ─────────────────┘ └─ backup 1 ─────────┘ └─ backup 2 ─┘
 Har link RetryingLLM hai (429/5xx pe backoff), poori chain FallbackLLM.
 """

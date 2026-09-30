@@ -8,7 +8,7 @@
 LLMs (alag providers dikhane ke liye):
     LLM_MODEL_A  -> travel agent ka LLM   (default: LLM_MODEL)
     LLM_MODEL_B  -> orchestrator ka LLM   (default: LLM_MODEL)
-    e.g. LLM_MODEL_A=groq:llama-3.3-70b-versatile  LLM_MODEL_B=gemini:gemini-2.5-flash
+    e.g. LLM_MODEL_A=groq:llama-3.3-70b-versatile  LLM_MODEL_B=gemini:gemini-3.8-flash
 """
 from __future__ import annotations
 

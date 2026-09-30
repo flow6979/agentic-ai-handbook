@@ -45,7 +45,7 @@ In the console you should see `[agent:tool] add({'a': 1234, 'b': 5678})` and the
 
 ## Tinker
 
-1. **Switch providers:** set `LLM_MODEL=gemini:gemini-2.5-flash` in `.env` and run the same script. Zero code changes.
+1. **Switch providers:** set `LLM_MODEL=gemini:gemini-3.8-flash` in `.env` and run the same script. Zero code changes.
 2. **Watch the fallback:** set `LLM_MODEL=openai:gpt-4o-mini,groq:llama-3.3-70b-versatile` and put a wrong `OPENAI_API_KEY`. You will see "falling back" in the log.
 3. **Tool error:** inside `add`, `raise ValueError("no negatives")` when `a < 0`, and ask "-5 + 3?". Watch what the model does after reading the error.
 4. **Effect of the docstring:** change the tool's docstring to just `"x"`. The model will use the tool less, or wrongly. This shows how important the tool description is.

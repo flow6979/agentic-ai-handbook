@@ -7,7 +7,7 @@ From the repo root: `pip install -e ".[all]"`, and put `LLM_MODEL` + a key in `.
 For better results, use different models for the generator and the judge:
 ```
 GEN_MODEL=groq:llama-3.3-70b-versatile
-EVAL_MODEL=gemini:gemini-2.5-flash
+EVAL_MODEL=gemini:gemini-3.8-flash
 ```
 
 ## Run

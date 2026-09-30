@@ -7,7 +7,7 @@ Repo root: `pip install -e ".[all]"`, `.env` mein `LLM_MODEL` + key.
 Better results ke liye generator aur judge alag:
 ```
 GEN_MODEL=groq:llama-3.3-70b-versatile
-EVAL_MODEL=gemini:gemini-2.5-flash
+EVAL_MODEL=gemini:gemini-3.8-flash
 ```
 
 ## Run

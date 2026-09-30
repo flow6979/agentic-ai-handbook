@@ -3,7 +3,7 @@
 Examples:
     get_llm("openai:gpt-4o-mini")
     get_llm("anthropic:claude-sonnet-5")
-    get_llm("gemini:gemini-2.5-flash")
+    get_llm("gemini:gemini-3.8-flash")
     get_llm("groq:llama-3.3-70b-versatile")
     get_llm("ollama:llama3.1")                 # local, free, no key
     get_llm("openrouter:meta-llama/llama-3.3-70b-instruct")

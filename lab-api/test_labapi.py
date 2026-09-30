@@ -84,5 +84,5 @@ def test_real_path_uses_user_key_and_classifies_errors():
 
 
 def test_missing_key_is_auth_error():
-    out, _ = collect({"lab": "ping", "llm": {"spec": "gemini:gemini-2.5-flash", "keys": {}}})
+    out, _ = collect({"lab": "ping", "llm": {"spec": "gemini:gemini-3.8-flash", "keys": {}}})
     assert out["error"]["kind"] == "auth"

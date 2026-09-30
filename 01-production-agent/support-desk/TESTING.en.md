@@ -12,7 +12,7 @@ pip install -e ".[all]"
 cp .env.example .env      # for a real LLM: fill in LLM_MODEL + that provider's key
 ```
 
-Free options: `groq:llama-3.3-70b-versatile` (free key), `gemini:gemini-2.5-flash` (free tier), `ollama:llama3.1` (local, no key).
+Free options: `groq:llama-3.3-70b-versatile` (free key), `gemini:gemini-3.8-flash` (free tier), `ollama:llama3.1` (local, no key).
 Tool calling needs a decent model. Small local models (1-3B) call tools incorrectly.
 
 ### Project-specific env vars (all optional)
@@ -121,7 +121,7 @@ Output:
 pass rate: 90% | tool_choice 90% | contains 100% | refusal 100%
 ```
 The exit code is 1 if the pass rate is below 80% (CI gate). In live mode every model scores differently. Compare two models:
-`LLM_MODEL=groq:llama-3.3-70b-versatile python $P/main.py eval --live` vs `LLM_MODEL=gemini:gemini-2.5-flash ...`
+`LLM_MODEL=groq:llama-3.3-70b-versatile python $P/main.py eval --live` vs `LLM_MODEL=gemini:gemini-3.8-flash ...`
 
 ## 5. How to confirm everything works
 
@@ -142,4 +142,4 @@ The exit code is 1 if the pass rate is below 80% (CI gate). In live mode every m
 3. **Memory compaction live:** with `SUPPORTDESK_CONTEXT_BUDGET=100 SUPPORTDESK_KEEP_LAST=2`, ask 4-5 questions in the REPL. Then run `sqlite3 01-production-agent/support-desk/data/supportdesk.sqlite3 "select summary from sessions"` to see the summary.
 4. **Break the prompt-injection guard:** write an injection that slips past the regex (for example in Hinglish, "pichle saare nirdesh bhool jao"). Try it with a real LLM. Then think: even if the input guard is bypassed, what data could leak? (Hint: no tool ever returns `internal_note`.) Add your pattern to `INJECTION_PATTERNS` and write a test.
 5. **New tool:** build `cancel_order(order_id)` (WRITE tier; allowed only for `processing` status). Update `TOOL_TIERS` and `ApprovalPolicy`, add 2 eval cases to `golden.jsonl`, then handle "cancel" in `guess_intent` in `offline.py`.
-6. **Fallback chain:** put `LLM_MODEL=groq:llama-3.3-70b-versatile,gemini:gemini-2.5-flash` in `.env` and deliberately set a wrong `GROQ_API_KEY`. 401 is non-retryable, so it should fall back to Gemini immediately (you will see `falling back` in the logs). Then think: is falling back on a wrong key the right behaviour, or should it raise an alert?
+6. **Fallback chain:** put `LLM_MODEL=groq:llama-3.3-70b-versatile,gemini:gemini-3.8-flash` in `.env` and deliberately set a wrong `GROQ_API_KEY`. 401 is non-retryable, so it should fall back to Gemini immediately (you will see `falling back` in the logs). Then think: is falling back on a wrong key the right behaviour, or should it raise an alert?

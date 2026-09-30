@@ -45,7 +45,7 @@ Console mein `[agent:tool] add({'a': 1234, 'b': 5678})` aur phir final answer di
 
 ## Tinker karo
 
-1. **Provider badlo:** `.env` mein `LLM_MODEL=gemini:gemini-2.5-flash` karo aur same script chalao. Code mein zero change.
+1. **Provider badlo:** `.env` mein `LLM_MODEL=gemini:gemini-3.8-flash` karo aur same script chalao. Code mein zero change.
 2. **Fallback dekho:** `LLM_MODEL=openai:gpt-4o-mini,groq:llama-3.3-70b-versatile` rakho aur `OPENAI_API_KEY` galat daal do. Log mein "falling back" dikhega.
 3. **Tool error:** `add` ke andar `raise ValueError("no negatives")` daalo jab `a < 0` ho, aur puchho "-5 + 3?". Dekho model error padh ke kya karta hai.
 4. **Docstring ka asar:** tool ka docstring hata ke `"x"` kar do. Model tool kam ya galat use karega. Isi se samajh aata hai ki tool description kitna important hai.
