@@ -65,7 +65,9 @@ class LabContext:
         return MeteredLLM(get_llm(spec or self.llm_spec, retries=retries, api_keys=self.api_keys), self.emit, role)
 
     def embedder(self):
-        return get_embedder(self.embed_spec or "local", api_key=self._key_for(self.embed_spec))
+        spec = self.embed_spec or "local"
+        real = get_embedder(spec, api_key=self._key_for(spec))
+        return real if spec == "local" else _FallbackEmbedder(real, spec, self.emit)
 
     def _key_for(self, spec: str | None) -> str | None:
         if not spec or ":" not in spec:
@@ -79,6 +81,34 @@ class LabContext:
     def step(self, kind: str, text: str, **data: Any) -> None:
         """Lab-specific UI event, e.g. step('thought', '...') ya step('chunk', '...', score=0.8)."""
         self.emit({"type": "step", "kind": kind, "text": text, **data})
+
+
+class _FallbackEmbedder:
+    """Provider ka embedding model fail ho (e.g. model retire ho gaya, 404) to local hashing embedder.
+
+    Beech mein switch karna mixed vectors bana deta, isliye pehli failure pe hi poora local pe jaate hain
+    aur UI ko 'warning' event bhejte hain.
+    """
+
+    def __init__(self, real, spec: str, emit: Emit):
+        self.real, self.spec, self.emit = real, spec, emit
+        self.active = real
+        self.dim = getattr(real, "dim", 0)
+
+    def embed(self, texts):
+        if self.active is self.real:
+            try:
+                return self.real.embed(texts)
+            except Exception as e:  # noqa: BLE001 - kisi bhi provider error pe local
+                from agentkit import get_embedder as _ge
+
+                self.active = _ge("local")
+                self.dim = self.active.dim
+                self.emit({"type": "warning", "text": f"{self.spec} embeddings failed ({str(e)[:160]}); using the local embedder instead"})
+        return self.active.embed(texts)
+
+    def embed_one(self, text):
+        return self.embed([text])[0]
 
 
 class MeteredLLM(LLM):
